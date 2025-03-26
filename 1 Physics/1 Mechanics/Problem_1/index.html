@@ -48,6 +48,22 @@
 <ul class="current">
 <li class="toctree-l2 current"><a class="reference internal current" href="#">Problem 1</a>
 <ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="#motivation">Motivation</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#task">Task</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#1-theoretical-foundation">1. Theoretical Foundation</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#2-analysis-of-the-range">2. Analysis of the Range</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#3-practical-applications">3. Practical Applications</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#4-implementation">4. Implementation</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#conclusion">Conclusion</a>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../Problem_2/">Problem 2</a>
@@ -172,7 +188,45 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="problem-1">Problem 1</h1>
-<p>test</p>
+<p><strong>Investigating the Range as a Function of the Angle of Projection</strong></p>
+<h3 id="motivation"><strong>Motivation</strong></h3>
+<p>Projectile motion, while seemingly simple, provides a rich framework for exploring fundamental principles of physics. The problem at hand is straightforward: analyze how the range of a projectile depends on its angle of projection. Despite its simplicity, the topic involves complex relationships governed by both linear and quadratic equations, making it an insightful subject of study.</p>
+<p>A key factor that makes this investigation compelling is the number of free parameters involved in projectile motion equations, such as initial velocity, gravitational acceleration, and launch height. These parameters contribute to a diverse set of solutions that model real-world scenarios, from the trajectory of a soccer ball to the flight path of a missile.</p>
+<hr/>
+<h3 id="task"><strong>Task</strong></h3>
+<h4 id="1-theoretical-foundation"><strong>1. Theoretical Foundation</strong></h4>
+<p>To analyze the range as a function of the angle of projection, we start by deriving the governing equations from fundamental principles of kinematics and dynamics. The motion of a projectile in the absence of air resistance follows Newton’s second law:</p>
+<ul>
+<li><strong>Equations of Motion:</strong></li>
+<li>Horizontal displacement: [ x = v_0 \cos(\theta) t ]</li>
+<li>Vertical displacement: [ y = v_0 \sin(\theta) t - \frac{1}{2}gt^2 ]</li>
+</ul>
+<p>Solving these equations yields the total time of flight <span class="arithmatex">\( T \)</span>:
+  [ T = \frac{2v_0 \sin(\theta)}{g} ]</p>
+<p>Substituting into the horizontal displacement equation, we obtain the range <span class="arithmatex">\( R \)</span>:
+  [ R = \frac{v_0^2 \sin(2\theta)}{g} ]</p>
+<p>This equation shows that the range depends on the square of the initial velocity and the sine of twice the projection angle.</p>
+<h4 id="2-analysis-of-the-range"><strong>2. Analysis of the Range</strong></h4>
+<ul>
+<li>The range <span class="arithmatex">\( R \)</span> is maximized when <span class="arithmatex">\( \sin(2\theta) \)</span> reaches its maximum value (1), which occurs at <span class="arithmatex">\( 2\theta = 90^\circ \)</span>, or <span class="arithmatex">\( \theta = 45^\circ \)</span>.</li>
+<li>Increasing the initial velocity <span class="arithmatex">\( v_0 \)</span> increases the range quadratically.</li>
+<li>A higher gravitational acceleration <span class="arithmatex">\( g \)</span> reduces the range.</li>
+<li>For non-zero launch height, the equation for <span class="arithmatex">\( R \)</span> becomes more complex, requiring further analysis.</li>
+</ul>
+<h4 id="3-practical-applications"><strong>3. Practical Applications</strong></h4>
+<ul>
+<li><strong>Sports:</strong> Understanding how the angle influences projectile range helps optimize techniques in soccer, basketball, and javelin throwing.</li>
+<li><strong>Engineering:</strong> In artillery and missile technology, precise control over launch angles is essential for maximizing impact range.</li>
+<li><strong>Space Exploration:</strong> The principles of projectile motion extend to orbital mechanics and spacecraft trajectory planning.</li>
+</ul>
+<h4 id="4-implementation"><strong>4. Implementation</strong></h4>
+<p>To further analyze the range as a function of the projection angle, a computational tool can be developed:
+- <strong>Algorithm:</strong> Implement numerical simulations in Python or MATLAB to visualize projectile motion under varying conditions.
+- <strong>Graphical Representation:</strong> Generate plots of range versus launch angle to observe the dependency.
+- <strong>Advanced Considerations:</strong> Extend the model to include air resistance, variable wind conditions, and non-flat terrain.</p>
+<hr/>
+<h3 id="conclusion"><strong>Conclusion</strong></h3>
+<p>The study of projectile motion offers valuable insights into both theoretical physics and practical applications. By understanding the mathematical framework and leveraging computational tools, we can develop a deeper appreciation of how varying initial conditions affect a projectile’s trajectory. Future work may involve refining the model with real-world complexities such as air resistance and varying gravitational fields.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
