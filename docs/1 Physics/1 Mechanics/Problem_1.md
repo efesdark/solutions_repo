@@ -16,13 +16,13 @@ To analyze the range as a function of the angle of projection, we start by deriv
 
 - **Equations of Motion:**
   - Horizontal displacement: $$ x = v_0 \cos(\theta) t $$
-  - Vertical displacement: \[ y = v_0 \sin(\theta) t - \frac{1}{2}gt^2 \]
+  - Vertical displacement: $$ y = v_0 \sin(\theta) t - \frac{1}{2}gt^2 $$
 
 Solving these equations yields the total time of flight \( T \):
-  \[ T = \frac{2v_0 \sin(\theta)}{g} \]
+  $$ T = \frac{2v_0 \sin(\theta)}{g} $$
 
 Substituting into the horizontal displacement equation, we obtain the range \( R \):
-  \[ R = \frac{v_0^2 \sin(2\theta)}{g} \]
+  $$ R = \frac{v_0^2 \sin(2\theta)}{g} $$
 
 This equation shows that the range depends on the square of the initial velocity and the sine of twice the projection angle.
 
