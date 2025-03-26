@@ -15,7 +15,7 @@ A key factor that makes this investigation compelling is the number of free para
 To analyze the range as a function of the angle of projection, we start by deriving the governing equations from fundamental principles of kinematics and dynamics. The motion of a projectile in the absence of air resistance follows Newton’s second law:
 
 - **Equations of Motion:**
-  - Horizontal displacement: \[ x = v_0 \cos(\theta) t \]
+  - Horizontal displacement: $$ x = v_0 \cos(\theta) t $$
   - Vertical displacement: \[ y = v_0 \sin(\theta) t - \frac{1}{2}gt^2 \]
 
 Solving these equations yields the total time of flight \( T \):
