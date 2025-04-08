@@ -36,17 +36,19 @@ These principles underpin modern space exploration, from launching satellites to
 
 Select a planet to see its cosmic velocities:
 
-<div id="velocityChart" style="width: 100%; height: 500px;"></div>
+<div style="margin-bottom: 1em;">
+  <select id="planetSelector">
+    <option value="earth">🌍 Earth</option>
+    <option value="mars">🔴 Mars</option>
+    <option value="jupiter">🟤 Jupiter</option>
+  </select>
+</div>
 
-<select id="planetSelector">
-  <option value="earth">Earth</option>
-  <option value="mars"> Mars</option>
-  <option value="jupiter">Jupiter</option>
-</select>
+<div id="velocityChart" style="width: 100%; height: 500px;"></div>
 
 <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
 <script>
-  window.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener("DOMContentLoaded", function () {
     const G = 6.67430e-11;
     const bodies = {
       earth: { name: "Earth", mass: 5.972e24, radius: 6371e3, distance: 1.496e11 },
@@ -61,11 +63,12 @@ Select a planet to see its cosmic velocities:
 
     function updateChart(planetKey) {
       const body = bodies[planetKey];
+      if (!body) return;
+      
       const v1 = Math.sqrt(G * body.mass / body.radius);
       const v2 = Math.sqrt(2 * G * body.mass / body.radius);
       const v3 = Math.sqrt(2 * G * sunMass / body.distance);
-
-      const velocities = [v1, v2, v3].map(v => v / 1000); // Convert to km/s
+      const velocities = [v1, v2, v3].map(v => v / 1000); // in km/s
 
       Plotly.newPlot(plotDiv, [{
         x: ['1st Cosmic', '2nd Cosmic', '3rd Cosmic'],
@@ -80,7 +83,10 @@ Select a planet to see its cosmic velocities:
       });
     }
 
+    // Initial plot
+    updateChart(selector.value);
+
+    // Add listener
     selector.addEventListener('change', () => updateChart(selector.value));
-    updateChart('earth');
   });
 </script>
