@@ -1,4 +1,4 @@
-# Problem 3
+# Problem 3: Trajectories of a Freely Released Payload Near Earth
 
 ## Motivation
 When an object is released from a moving rocket near Earth, its trajectory depends on initial conditions and gravitational forces. This scenario presents a rich problem, blending principles of orbital mechanics and numerical methods. Understanding the potential trajectories is vital for space missions, such as deploying payloads or returning objects to Earth.
@@ -52,6 +52,9 @@ The following code simulates the trajectory of a freely released payload near Ea
   <input type="number" id="angleInput" value="45" step="1" min="0" max="90">
   <canvas id="trajectoryChart" width="600" height="400"></canvas>
 </div>
+
+<!-- Load Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
   const G = 6.67430e-11; // Gravitational constant
