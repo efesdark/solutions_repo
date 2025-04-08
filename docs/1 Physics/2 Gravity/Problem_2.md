@@ -35,60 +35,110 @@ These principles underpin modern space exploration, from launching satellites to
 ## Interactive Chart
 
 Select a planet to see its cosmic velocities:
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div style="margin-bottom: 1em;">
-  Choose a planet:
-
-<select id="planetSelector">
-  <option value="earth">🌍 Earth</option>
-  <option value="mars">🔴 Mars</option>
-  <option value="jupiter">🟤 Jupiter</option>
-</select>
+<div style="margin-top: 30px;">
+  <label for="planetSelector"><strong>Choose a planet:</strong></label>
+  <select id="planetSelector">
+    <option value="earth">🌍 Earth</option>
+    <option value="mars">🔴 Mars</option>
+    <option value="jupiter">🟤 Jupiter</option>
+  </select>
+  <canvas id="velocityChart" width="600" height="400"></canvas>
 </div>
 
-<div id="velocityChart" style="width: 100%; height: 500px;"></div>
-
-<script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const G = 6.67430e-11;
-    const bodies = {
-      earth: { name: "Earth", mass: 5.972e24, radius: 6371e3, distance: 1.496e11 },
-      mars: { name: "Mars", mass: 6.417e23, radius: 3389.5e3, distance: 2.279e11 },
-      jupiter: { name: "Jupiter", mass: 1.898e27, radius: 69911e3, distance: 7.785e11 }
+  const planets = {
+    earth: {
+      name: "Earth",
+      mass: 5.972e24, // in kg
+      radius: 6371e3  // in meters
+    },
+    mars: {
+      name: "Mars",
+      mass: 6.39e23,
+      radius: 3389.5e3
+    },
+    jupiter: {
+      name: "Jupiter",
+      mass: 1.898e27,
+      radius: 69911e3
+    }
+  };
+
+  const G = 6.67430e-11; // Gravitational constant
+
+  function calculateVelocities(planet) {
+    const r = planet.radius;
+    const M = planet.mass;
+
+    const v1 = Math.sqrt(G * M / r);        // 1st Cosmic Velocity
+    const v2 = Math.sqrt(2) * v1;           // 2nd Cosmic Velocity
+    const v3 = Math.sqrt(G * 1.989e30 / (1.5e11)) + v2; // Approx. from Earth orbit + planet escape
+
+    return [v1 / 1000, v2 / 1000, v3 / 1000]; // convert to km/s
+  }
+
+  const ctx = document.getElementById("velocityChart").getContext("2d");
+  let velocityChart = null;
+
+  function updateChart(planetKey) {
+    const planet = planets[planetKey];
+    const [v1, v2, v3] = calculateVelocities(planet);
+
+    const data = {
+      labels: [
+        "1st Cosmic Velocity\n(Orbiting)", 
+        "2nd Cosmic Velocity\n(Escape)", 
+        "3rd Cosmic Velocity\n(Leaving Solar System)"
+      ],
+      datasets: [{
+        label: `Velocities for ${planet.name} (km/s)`,
+        data: [v1, v2, v3],
+        backgroundColor: ['#007bff', '#28a745', '#ff5722']
+      }]
     };
 
-    const sunMass = 1.989e30;
+    const config = {
+      type: 'bar',
+      data: data,
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: `Cosmic Velocities for ${planet.name}`
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${context.dataset.label}: ${context.parsed.y.toFixed(2)} km/s`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Velocity (km/s)'
+            }
+          }
+        }
+      }
+    };
 
-    const plotDiv = document.getElementById('velocityChart');
-    const selector = document.getElementById('planetSelector');
-
-    function updateChart(planetKey) {
-      const body = bodies[planetKey];
-      if (!body) return;
-      
-      const v1 = Math.sqrt(G * body.mass / body.radius);
-      const v2 = Math.sqrt(2 * G * body.mass / body.radius);
-      const v3 = Math.sqrt(2 * G * sunMass / body.distance);
-      const velocities = [v1, v2, v3].map(v => v / 1000); // in km/s
-
-      Plotly.newPlot(plotDiv, [{
-        x: ['1st Cosmic', '2nd Cosmic', '3rd Cosmic'],
-        y: velocities,
-        type: 'bar',
-        text: velocities.map(v => v.toFixed(2) + ' km/s'),
-        textposition: 'auto',
-        marker: { color: ['#1f77b4', '#ff7f0e', '#2ca02c'] }
-      }], {
-        title: `${body.name} Cosmic Velocities`,
-        yaxis: { title: 'Velocity (km/s)' }
-      });
+    if (velocityChart) {
+      velocityChart.destroy();
     }
 
-    // Initial plot
-    updateChart(selector.value);
+    velocityChart = new Chart(ctx, config);
+  }
 
-    // Add listener
-    selector.addEventListener('change', () => updateChart(selector.value));
+  document.getElementById("planetSelector").addEventListener("change", (e) => {
+    updateChart(e.target.value);
   });
+
+  updateChart("earth"); // default chart
 </script>
