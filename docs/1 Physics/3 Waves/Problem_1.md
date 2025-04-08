@@ -15,7 +15,7 @@ Studying these patterns helps us understand wave behavior in a simple, visual wa
 
 ## Computational Tool
 
-```html
+
 <div style="margin-top: 30px;">
   <label for="polygonSidesInput"><strong>Polygon Sides (e.g., 3 for Triangle, 4 for Square):</strong></label>
   <input type="number" id="polygonSidesInput" value="4" step="1" min="3" max="10">
