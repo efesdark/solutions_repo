@@ -60,6 +60,28 @@
 </li>
 <li class="toctree-l2 current"><a class="reference internal current" href="#">Problem 3</a>
 <ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="#motivation">Motivation</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#task">Task</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gravitational-principles">Gravitational Principles</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#equations-used">Equations Used:</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#trajectories-types">Trajectories Types:</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#real-world-applications">Real-World Applications</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#computational-tool">Computational Tool</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#interactive-simulation">Interactive Simulation:</a>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -172,6 +194,143 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="problem-3">Problem 3</h1>
+<h2 id="motivation">Motivation</h2>
+<p>When an object is released from a moving rocket near Earth, its trajectory depends on initial conditions and gravitational forces. This scenario presents a rich problem, blending principles of orbital mechanics and numerical methods. Understanding the potential trajectories is vital for space missions, such as deploying payloads or returning objects to Earth.</p>
+<h2 id="task">Task</h2>
+<ul>
+<li><strong>Analyze the possible trajectories</strong> (e.g., parabolic, hyperbolic, elliptical) of a payload released near Earth.</li>
+<li>Perform a <strong>numerical analysis</strong> to compute the path of the payload based on given initial conditions (position, velocity, and altitude).</li>
+<li>Discuss how these trajectories relate to <strong>orbital insertion</strong>, <strong>reentry</strong>, or <strong>escape</strong> scenarios.</li>
+<li>Develop a <strong>computational tool</strong> to simulate and visualize the motion of the payload under Earth's gravity, accounting for initial velocities and directions.</li>
+</ul>
+<h2 id="gravitational-principles">Gravitational Principles</h2>
+<p>To understand the behavior of a freely released payload near Earth, we must rely on <strong>Newton's Law of Gravitation</strong> and the principles of <strong>orbital mechanics</strong>:</p>
+<ul>
+<li>The gravitational force between Earth and the payload is inversely proportional to the square of the distance between their centers.</li>
+<li>The object’s trajectory will depend on its initial velocity and the direction of release.</li>
+</ul>
+<h3 id="equations-used">Equations Used:</h3>
+<p>Newton’s Law of Gravitation:
+$$
+F = \frac{GMm}{r^2}
+$$
+Where:
+- <span class="arithmatex">\( G \)</span> is the gravitational constant.
+- <span class="arithmatex">\( M \)</span> is the mass of Earth.
+- <span class="arithmatex">\( m \)</span> is the mass of the payload.
+- <span class="arithmatex">\( r \)</span> is the distance between the center of the Earth and the payload.</p>
+<p>The trajectory can be computed using basic kinematic equations, updated step-by-step via numerical methods.</p>
+<h2 id="trajectories-types">Trajectories Types:</h2>
+<ol>
+<li><strong>Parabolic Trajectory:</strong> Occurs when the payload is released with a velocity below the escape velocity but at an angle.</li>
+<li><strong>Hyperbolic Trajectory:</strong> Occurs when the payload’s velocity exceeds the escape velocity.</li>
+<li><strong>Elliptical Trajectory:</strong> Occurs when the payload’s velocity is sufficient to form a closed orbit around Earth.</li>
+</ol>
+<h3 id="real-world-applications">Real-World Applications</h3>
+<ul>
+<li><strong>Space Mission Planning:</strong> Understanding payload trajectories is essential for deploying satellites or performing rendezvous operations.</li>
+<li><strong>Reentry Scenarios:</strong> Calculating the correct reentry trajectory ensures safe return of payloads, such as space capsules.</li>
+<li><strong>Escape Scenarios:</strong> Understanding escape velocities is crucial for interplanetary missions and space exploration.</li>
+</ul>
+<h2 id="computational-tool">Computational Tool</h2>
+<p>The following code simulates the trajectory of a freely released payload near Earth, taking into account the initial velocity and launch angle. The simulation provides a visual representation of the trajectory, illustrating how the payload will behave under the influence of gravity.</p>
+<hr/>
+<h3 id="interactive-simulation">Interactive Simulation:</h3>
+<div style="margin-top: 30px;">
+<label for="velocityInput"><strong>Initial Velocity (km/s):</strong></label>
+<input id="velocityInput" max="20" min="0" step="0.1" type="number" value="8.0"/>
+<label for="angleInput"><strong>Launch Angle (°):</strong></label>
+<input id="angleInput" max="90" min="0" step="1" type="number" value="45"/>
+<canvas height="400" id="trajectoryChart" width="600"></canvas>
+</div>
+<script>
+  const G = 6.67430e-11; // Gravitational constant
+  const M = 5.972e24; // Earth mass in kg
+  const R = 6371e3; // Earth radius in meters
+  const dt = 0.05; // time step in seconds
+
+  function calculateTrajectory(initialVelocity, launchAngle, tMax = 5000) {
+    let x = 0;
+    let y = R + 100000; // 100 km altitude
+    let vx = initialVelocity * Math.cos(launchAngle * Math.PI / 180);
+    let vy = initialVelocity * Math.sin(launchAngle * Math.PI / 180);
+    let trajectory = [];
+
+    for (let t = 0; t < tMax; t += dt) {
+      let r = Math.sqrt(x * x + y * y); // distance from Earth's center
+      let ax = -G * M * x / (r * r * r); // gravitational acceleration in x
+      let ay = -G * M * y / (r * r * r); // gravitational acceleration in y
+
+      vx += ax * dt;
+      vy += ay * dt;
+      x += vx * dt;
+      y += vy * dt;
+
+      trajectory.push({ x: x / 1000, y: y / 1000 }); // Convert to km
+      if (y <= R) break; // Stop if it hits the Earth's surface
+    }
+    return trajectory;
+  }
+
+  const ctx = document.getElementById("trajectoryChart").getContext("2d");
+  let trajectoryChart = null;
+
+  function updateChart() {
+    const initialVelocity = parseFloat(document.getElementById("velocityInput").value);
+    const launchAngle = parseFloat(document.getElementById("angleInput").value);
+    const trajectory = calculateTrajectory(initialVelocity, launchAngle);
+
+    const data = {
+      labels: trajectory.map((point, idx) => idx * dt),
+      datasets: [{
+        label: `Trajectory (Initial Velocity: ${initialVelocity} km/s, Angle: ${launchAngle}°)`,
+        data: trajectory.map(point => ({ x: point.x, y: point.y })),
+        borderColor: '#007bff',
+        fill: false,
+        tension: 0.1
+      }]
+    };
+
+    const config = {
+      type: 'line',
+      data: data,
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Payload Trajectory Near Earth'
+          }
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Distance (km)'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Altitude (km)'
+            }
+          }
+        }
+      }
+    };
+
+    if (trajectoryChart) {
+      trajectoryChart.destroy();
+    }
+
+    trajectoryChart = new Chart(ctx, config);
+  }
+
+  document.getElementById("velocityInput").addEventListener("input", updateChart);
+  document.getElementById("angleInput").addEventListener("input", updateChart);
+
+  updateChart(); // Initial chart
+</script>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
