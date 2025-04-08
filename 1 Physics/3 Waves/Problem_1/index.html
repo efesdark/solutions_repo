@@ -66,6 +66,20 @@
 <ul class="current">
 <li class="toctree-l2 current"><a class="reference internal current" href="#">Problem 1</a>
 <ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="#motivation">Motivation</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#task">Task</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#wave-equation">Wave Equation</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#interference-patterns">Interference Patterns</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#computational-tool">Computational Tool</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#interactive-simulation">Interactive Simulation:</a>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -172,6 +186,160 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="problem-1">Problem 1</h1>
+<h2 id="motivation">Motivation</h2>
+<p>Interference occurs when waves from different sources overlap, creating new patterns. On a water surface, this can be easily observed when ripples from different points meet, forming distinctive interference patterns. These patterns can show us how waves combine in different ways, either reinforcing each other or canceling out.</p>
+<p>Studying these patterns helps us understand wave behavior in a simple, visual way. It also allows us to explore important concepts, like the relationship between wave phase and the effects of multiple sources. This task offers a hands-on approach to learning about wave interactions and their real-world applications, making it an interesting and engaging way to dive into wave physics.</p>
+<h2 id="task">Task</h2>
+<ul>
+<li><strong>Select a Regular Polygon:</strong> Choose a regular polygon (e.g., equilateral triangle, square, regular pentagon).</li>
+<li><strong>Position the Sources:</strong> Place point wave sources at the vertices of the selected polygon.</li>
+<li><strong>Wave Equations:</strong> Write the equations describing the waves emitted from each source, considering their respective positions.</li>
+<li><strong>Superposition of Waves:</strong> Apply the principle of superposition by summing the wave displacements at each point on the water surface.</li>
+<li><strong>Analyze Interference Patterns:</strong> Examine the resulting displacement as a function of position and time. Identify regions of constructive interference (wave amplification) and destructive interference (wave cancellation).</li>
+<li><strong>Visualization:</strong> Present your findings graphically, illustrating the interference patterns for the chosen regular polygon.</li>
+</ul>
+<h2 id="wave-equation">Wave Equation</h2>
+<p>The displacement of the water surface at a point <span class="arithmatex">\( (x, y) \)</span> and time <span class="arithmatex">\( t \)</span> due to a single wave emitted from a point source is described by the following equation:</p>
+<div class="arithmatex">\[
+\zeta(x, y, t) = A \sin(k r - \omega t + \phi_0)
+\]</div>
+<p>Where:
+- <span class="arithmatex">\( \zeta(x, y, t) \)</span> is the displacement at point <span class="arithmatex">\( (x, y) \)</span> at time <span class="arithmatex">\( t \)</span>,
+- <span class="arithmatex">\( A \)</span> is the amplitude of the wave,
+- <span class="arithmatex">\( k \)</span> is the wave number, related to the wavelength <span class="arithmatex">\( \lambda \)</span> by <span class="arithmatex">\( k = \frac{2\pi}{\lambda} \)</span>,
+- <span class="arithmatex">\( \omega \)</span> is the angular frequency, related to the frequency <span class="arithmatex">\( f \)</span> by <span class="arithmatex">\( \omega = 2 \pi f \)</span>,
+- <span class="arithmatex">\( r \)</span> is the distance from the source to the point <span class="arithmatex">\( (x, y) \)</span>,
+- <span class="arithmatex">\( \phi_0 \)</span> is the initial phase.</p>
+<p>The superposition of waves from multiple sources is given by the sum of the individual displacements:</p>
+<div class="arithmatex">\[
+\zeta(x, y, t) = \sum_{i=1}^{N} A_i \sin(k r_i - \omega t + \phi_{0i})
+\]</div>
+<p>Where:
+- <span class="arithmatex">\( N \)</span> is the number of sources (vertices of the polygon),
+- <span class="arithmatex">\( A_i \)</span> is the amplitude of the wave from source <span class="arithmatex">\( i \)</span>,
+- <span class="arithmatex">\( r_i \)</span> is the distance from the source <span class="arithmatex">\( i \)</span> to the point <span class="arithmatex">\( (x, y) \)</span>,
+- <span class="arithmatex">\( \phi_{0i} \)</span> is the initial phase of the wave from source <span class="arithmatex">\( i \)</span>.</p>
+<h2 id="interference-patterns">Interference Patterns</h2>
+<p>By applying the principle of superposition, we can visualize the interference patterns formed by multiple point sources. The result is a pattern of constructive and destructive interference:
+- <strong>Constructive Interference</strong> occurs when the waves from different sources reinforce each other, leading to larger displacements.
+- <strong>Destructive Interference</strong> occurs when the waves from different sources cancel each other out, leading to smaller or zero displacement.</p>
+<p>This results in a characteristic interference pattern on the water surface that can be analyzed and visualized graphically.</p>
+<h2 id="computational-tool">Computational Tool</h2>
+<p>The following code simulates the interference patterns on a water surface due to the superposition of waves from multiple sources placed at the vertices of a regular polygon. The simulation will visualize the water surface showing regions of constructive and destructive interference.</p>
+<hr/>
+<h3 id="interactive-simulation">Interactive Simulation:</h3>
+<div style="margin-top: 30px;">
+<label for="polygonSidesInput"><strong>Number of Polygon Sides (e.g., 3 for Triangle, 4 for Square):</strong></label>
+<input id="polygonSidesInput" max="10" min="3" step="1" type="number" value="4"/>
+<label for="waveAmplitudeInput"><strong>Wave Amplitude:</strong></label>
+<input id="waveAmplitudeInput" max="5" min="0.1" step="0.1" type="number" value="1"/>
+<canvas height="400" id="interferenceChart" width="600"></canvas>
+</div>
+<!-- Load Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Constants for the wave
+  const A = 1;  // Amplitude of the wave
+  const k = 2 * Math.PI / 10;  // Example wavelength (arbitrary, can be adjusted)
+  const omega = 2 * Math.PI * 1;  // Example frequency (1 Hz for simplicity)
+
+  // Function to calculate wave displacement at a point (x, y)
+  function calculateWave(x, y, sources, t) {
+    let displacement = 0;
+    sources.forEach(source => {
+      let dx = x - source.x;
+      let dy = y - source.y;
+      let r = Math.sqrt(dx * dx + dy * dy);  // Distance from source to point (x, y)
+      displacement += A * Math.sin(k * r - omega * t);  // Superposition of waves
+    });
+    return displacement;
+  }
+
+  // Function to generate interference pattern
+  function generateInterferencePattern(sides, amplitude, t) {
+    const width = 600;
+    const height = 400;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = 150;  // Radius of the polygon
+    const angleStep = 2 * Math.PI / sides;  // Angle between sources
+
+    // Generate sources at the vertices of the polygon
+    let sources = [];
+    for (let i = 0; i < sides; i++) {
+      let angle = i * angleStep;
+      let x = centerX + radius * Math.cos(angle);
+      let y = centerY + radius * Math.sin(angle);
+      sources.push({ x, y });
+    }
+
+    // Create the data for the interference pattern
+    let data = [];
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < height; y++) {
+        let displacement = calculateWave(x, y, sources, t);
+        data.push({ x: x, y: y, displacement: displacement });
+      }
+    }
+
+    return data;
+  }
+
+  const ctx = document.getElementById("interferenceChart").getContext("2d");
+  let interferenceChart = null;
+
+  function updateChart() {
+    const sides = parseInt(document.getElementById("polygonSidesInput").value);
+    const amplitude = parseFloat(document.getElementById("waveAmplitudeInput").value);
+    const t = Date.now() / 1000;  // Use current time as the time variable
+
+    const patternData = generateInterferencePattern(sides, amplitude, t);
+
+    // Create heatmap-like data for the chart
+    const data = {
+      labels: patternData.map(point => point.x),
+      datasets: [{
+        label: `Interference Pattern (Polygon with ${sides} sides)`,
+        data: patternData.map(point => ({ x: point.x, y: point.y, r: point.displacement })),
+        backgroundColor: patternData.map(point => `rgba(0, 0, 255, ${Math.abs(point.displacement)})`),
+        borderWidth: 0
+      }]
+    };
+
+    const config = {
+      type: 'scatter',
+      data: data,
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Water Surface Interference Pattern'
+          }
+        },
+        scales: {
+          x: {
+            display: false
+          },
+          y: {
+            display: false
+          }
+        }
+      }
+    };
+
+    if (interferenceChart) {
+      interferenceChart.destroy();
+    }
+
+    interferenceChart = new Chart(ctx, config);
+  }
+
+  document.getElementById("polygonSidesInput").addEventListener("input", updateChart);
+  document.getElementById("waveAmplitudeInput").addEventListener("input", updateChart);
+
+  updateChart(); // Initial chart
+</script>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
