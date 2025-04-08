@@ -37,11 +37,13 @@ These principles underpin modern space exploration, from launching satellites to
 Select a planet to see its cosmic velocities:
 
 <div style="margin-bottom: 1em;">
-  <select id="planetSelector">
-    <option value="earth">🌍 Earth</option>
-    <option value="mars">🔴 Mars</option>
-    <option value="jupiter">🟤 Jupiter</option>
-  </select>
+  Choose a planet:
+
+<select id="planetSelector">
+  <option value="earth">🌍 Earth</option>
+  <option value="mars">🔴 Mars</option>
+  <option value="jupiter">🟤 Jupiter</option>
+</select>
 </div>
 
 <div id="velocityChart" style="width: 100%; height: 500px;"></div>
