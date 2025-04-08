@@ -48,3 +48,4 @@ To further analyze the range as a function of the projection angle, a computatio
 ### **Conclusion**
 The study of projectile motion offers valuable insights into both theoretical physics and practical applications. By understanding the mathematical framework and leveraging computational tools, we can develop a deeper appreciation of how varying initial conditions affect a projectile’s trajectory. Future work may involve refining the model with real-world complexities such as air resistance and varying gravitational fields.
 
+![alt text](image.png)
