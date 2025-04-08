@@ -49,3 +49,77 @@ To further analyze the range as a function of the projection angle, a computatio
 The study of projectile motion offers valuable insights into both theoretical physics and practical applications. By understanding the mathematical framework and leveraging computational tools, we can develop a deeper appreciation of how varying initial conditions affect a projectile’s trajectory. Future work may involve refining the model with real-world complexities such as air resistance and varying gravitational fields.
 
 ![alt text](image.png)
+
+### Interactive Simulation
+
+<details>
+<summary>Click to interact with parameters</summary>
+
+<div style="padding: 15px; border: 1px solid #e1e4e8; border-radius: 6px; margin-top: 10px;">
+    <div id="plotly-chart"></div>
+    <div style="margin-top: 20px;">
+        <label style="display: block; margin: 10px 0;">
+            Initial Velocity (m/s): 
+            <input type="range" id="v0" min="5" max="50" value="20" style="vertical-align: middle;">
+            <span id="v0Value">20</span>
+        </label>
+        <label style="display: block; margin: 10px 0;">
+            Gravity (m/s²): 
+            <input type="range" id="gravity" min="3" max="25" value="9.81" step="0.1">
+            <span id="gravityValue">9.81</span>
+        </label>
+        <label style="display: block; margin: 10px 0;">
+            Launch Height (m): 
+            <input type="range" id="height" min="0" max="30" value="0">
+            <span id="heightValue">0</span>
+        </label>
+    </div>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+<script>
+(function() {
+    // Calculation and plotting logic
+    function calculateRange(theta, v0, g, h) {
+        const thetaRad = theta * Math.PI / 180;
+        const sinTheta = Math.sin(thetaRad);
+        const cosTheta = Math.cos(thetaRad);
+        const discriminant = (v0*sinTheta)**2 + 2*g*h;
+        if(discriminant < 0) return 0;
+        const t = (v0*sinTheta + Math.sqrt(discriminant))/g;
+        return v0*cosTheta * t;
+    }
+
+    function updatePlot() {
+        const v0 = parseFloat(document.getElementById('v0').value);
+        const g = parseFloat(document.getElementById('gravity').value);
+        const h = parseFloat(document.getElementById('height').value);
+        
+        const angles = Array.from({length: 90}, (_, i) => i);
+        const ranges = angles.map(angle => calculateRange(angle, v0, g, h));
+
+        Plotly.newPlot('plotly-chart', [{
+            x: angles,
+            y: ranges,
+            type: 'scatter',
+            mode: 'lines+markers'
+        }], {
+            title: `Range vs. Launch Angle (v₀=${v0}m/s, g=${g}m/s², h=${h}m)`,
+            xaxis: {title: 'Launch Angle (degrees)'},
+            yaxis: {title: 'Range (m)'}
+        });
+    }
+
+    // Event listeners
+    document.querySelectorAll('input[type="range"]').forEach(input => {
+        input.addEventListener('input', function() {
+            document.getElementById(this.id + 'Value').textContent = this.value;
+            updatePlot();
+        });
+    });
+
+    // Initial plot
+    updatePlot();
+})();
+</script>
+</details>
