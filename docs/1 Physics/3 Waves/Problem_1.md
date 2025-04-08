@@ -126,34 +126,3 @@ Studying these patterns helps us understand wave behavior in a simple, visual wa
 
   updateChart(); // Initial chart
 </script>
-
-
-    // Create the data for the interference pattern
-    let data = [];
-    const gridSize = 100; // reduce the number of points in the grid
-    for (let x = 0; x < width; x += Math.floor(width / gridSize)) {
-      for (let y = 0; y < height; y += Math.floor(height / gridSize)) {
-        let displacement = calculateWave(x, y, sources, t);
-        data.push({ x: x, y: y, displacement: displacement });
-      }
-    }
-
-    return data;
-  }
-
-  const ctx = document.getElementById("interferenceChart").getContext("2d");
-  let interferenceChart = null;
-
-  function updateChart() {
-    const sides = parseInt(document.getElementById("polygonSidesInput").value);
-    const amplitude = parseFloat(document.getElementById("waveAmplitudeInput").value);
-    const t = Date.now() / 1000;  // Use current time as the time variable
-
-    const patternData = generateInterferencePattern(sides, amplitude, t);
-
-    // Create heatmap-like data for the chart
-    const data = {
-      labels: patternData.map(point => point.x),
-      datasets: [{
-        label: `Interference Pattern (Polygon with ${sides} sides)`,
-        data: patternData.map(point => ({ x: point.x, y
