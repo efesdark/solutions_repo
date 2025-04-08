@@ -1,4 +1,5 @@
 site_name: Physics and Mathematics
+
 theme:
   name: readthedocs
   highlightjs: true
@@ -6,11 +7,16 @@ theme:
     - yaml
     - rust
     - python
+
 markdown_extensions:
   - toc
   - tables
+  - attr_list  # HTML attribute desteği
+  - md_in_html  # HTML içinde Markdown
+  - pymdownx.superfences  # Kod blokları için gelişmiş özellikler
   - pymdownx.arithmatex:
       generic: true
+
 plugins:
   - search
   - mermaid2
@@ -18,5 +24,4 @@ plugins:
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js
-
-    
+  - https://cdn.plot.ly/plotly-2.24.1.min.js  # İnteraktif grafikler için
