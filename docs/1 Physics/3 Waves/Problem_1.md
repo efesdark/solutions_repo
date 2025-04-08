@@ -1,5 +1,4 @@
-# Problem 1
-
+# Problem 1: Interference Patterns on a Water Surface
 
 ## Motivation
 Interference occurs when waves from different sources overlap, creating new patterns. On a water surface, this can be easily observed when ripples from different points meet, forming distinctive interference patterns. These patterns can show us how waves combine in different ways, either reinforcing each other or canceling out.
@@ -14,48 +13,9 @@ Studying these patterns helps us understand wave behavior in a simple, visual wa
 - **Analyze Interference Patterns:** Examine the resulting displacement as a function of position and time. Identify regions of constructive interference (wave amplification) and destructive interference (wave cancellation).
 - **Visualization:** Present your findings graphically, illustrating the interference patterns for the chosen regular polygon.
 
-## Wave Equation
-
-The displacement of the water surface at a point \( (x, y) \) and time \( t \) due to a single wave emitted from a point source is described by the following equation:
-
-\[
-\zeta(x, y, t) = A \sin(k r - \omega t + \phi_0)
-\]
-
-Where:
-- \( \zeta(x, y, t) \) is the displacement at point \( (x, y) \) at time \( t \),
-- \( A \) is the amplitude of the wave,
-- \( k \) is the wave number, related to the wavelength \( \lambda \) by \( k = \frac{2\pi}{\lambda} \),
-- \( \omega \) is the angular frequency, related to the frequency \( f \) by \( \omega = 2 \pi f \),
-- \( r \) is the distance from the source to the point \( (x, y) \),
-- \( \phi_0 \) is the initial phase.
-
-The superposition of waves from multiple sources is given by the sum of the individual displacements:
-
-\[
-\zeta(x, y, t) = \sum_{i=1}^{N} A_i \sin(k r_i - \omega t + \phi_{0i})
-\]
-
-Where:
-- \( N \) is the number of sources (vertices of the polygon),
-- \( A_i \) is the amplitude of the wave from source \( i \),
-- \( r_i \) is the distance from the source \( i \) to the point \( (x, y) \),
-- \( \phi_{0i} \) is the initial phase of the wave from source \( i \).
-
-## Interference Patterns
-By applying the principle of superposition, we can visualize the interference patterns formed by multiple point sources. The result is a pattern of constructive and destructive interference:
-- **Constructive Interference** occurs when the waves from different sources reinforce each other, leading to larger displacements.
-- **Destructive Interference** occurs when the waves from different sources cancel each other out, leading to smaller or zero displacement.
-
-This results in a characteristic interference pattern on the water surface that can be analyzed and visualized graphically.
-
 ## Computational Tool
-The following code simulates the interference patterns on a water surface due to the superposition of waves from multiple sources placed at the vertices of a regular polygon. The simulation will visualize the water surface showing regions of constructive and destructive interference.
 
----
-
-### Interactive Simulation:
-
+```html
 <div style="margin-top: 30px;">
   <label for="polygonSidesInput"><strong>Number of Polygon Sides (e.g., 3 for Triangle, 4 for Square):</strong></label>
   <input type="number" id="polygonSidesInput" value="4" step="1" min="3" max="10">
@@ -64,7 +24,6 @@ The following code simulates the interference patterns on a water surface due to
   <canvas id="interferenceChart" width="600" height="400"></canvas>
 </div>
 
-<!-- Load Chart.js Library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
@@ -105,8 +64,9 @@ The following code simulates the interference patterns on a water surface due to
 
     // Create the data for the interference pattern
     let data = [];
-    for (let x = 0; x < width; x++) {
-      for (let y = 0; y < height; y++) {
+    const gridSize = 100; // reduce the number of points in the grid
+    for (let x = 0; x < width; x += Math.floor(width / gridSize)) {
+      for (let y = 0; y < height; y += Math.floor(height / gridSize)) {
         let displacement = calculateWave(x, y, sources, t);
         data.push({ x: x, y: y, displacement: displacement });
       }
@@ -130,43 +90,4 @@ The following code simulates the interference patterns on a water surface due to
       labels: patternData.map(point => point.x),
       datasets: [{
         label: `Interference Pattern (Polygon with ${sides} sides)`,
-        data: patternData.map(point => ({ x: point.x, y: point.y, r: point.displacement })),
-        backgroundColor: patternData.map(point => `rgba(0, 0, 255, ${Math.abs(point.displacement)})`),
-        borderWidth: 0
-      }]
-    };
-
-    const config = {
-      type: 'scatter',
-      data: data,
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: 'Water Surface Interference Pattern'
-          }
-        },
-        scales: {
-          x: {
-            display: false
-          },
-          y: {
-            display: false
-          }
-        }
-      }
-    };
-
-    if (interferenceChart) {
-      interferenceChart.destroy();
-    }
-
-    interferenceChart = new Chart(ctx, config);
-  }
-
-  document.getElementById("polygonSidesInput").addEventListener("input", updateChart);
-  document.getElementById("waveAmplitudeInput").addEventListener("input", updateChart);
-
-  updateChart(); // Initial chart
-</script>
+        data: patternData.map(point => ({ x: point.x, y
