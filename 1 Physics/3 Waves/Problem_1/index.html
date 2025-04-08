@@ -193,18 +193,17 @@
 <h2 id="computational-tool">Computational Tool</h2>
 <p>```html</p>
 <div style="margin-top: 30px;">
-<label for="polygonSidesInput"><strong>Number of Polygon Sides (e.g., 3 for Triangle, 4 for Square):</strong></label>
+<label for="polygonSidesInput"><strong>Polygon Sides (e.g., 3 for Triangle, 4 for Square):</strong></label>
 <input id="polygonSidesInput" max="10" min="3" step="1" type="number" value="4"/>
 <label for="waveAmplitudeInput"><strong>Wave Amplitude:</strong></label>
 <input id="waveAmplitudeInput" max="5" min="0.1" step="0.1" type="number" value="1"/>
-<canvas height="400" id="interferenceChart" width="600"></canvas>
+<canvas height="300" id="interferenceChart" width="300"></canvas>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Constants for the wave
   const A = 1;  // Amplitude of the wave
-  const k = 2 * Math.PI / 10;  // Example wavelength (arbitrary, can be adjusted)
-  const omega = 2 * Math.PI * 1;  // Example frequency (1 Hz for simplicity)
+  const k = 2 * Math.PI / 10;  // Example wavelength
+  const omega = 2 * Math.PI * 1;  // Example frequency
 
   // Function to calculate wave displacement at a point (x, y)
   function calculateWave(x, y, sources, t) {
@@ -212,22 +211,20 @@
     sources.forEach(source => {
       let dx = x - source.x;
       let dy = y - source.y;
-      let r = Math.sqrt(dx * dx + dy * dy);  // Distance from source to point (x, y)
+      let r = Math.sqrt(dx * dx + dy * dy);  // Distance from source to point
       displacement += A * Math.sin(k * r - omega * t);  // Superposition of waves
     });
     return displacement;
   }
 
-  // Function to generate interference pattern
   function generateInterferencePattern(sides, amplitude, t) {
-    const width = 600;
-    const height = 400;
+    const width = 300;
+    const height = 300;
     const centerX = width / 2;
     const centerY = height / 2;
-    const radius = 150;  // Radius of the polygon
-    const angleStep = 2 * Math.PI / sides;  // Angle between sources
+    const radius = 100;
+    const angleStep = 2 * Math.PI / sides;
 
-    // Generate sources at the vertices of the polygon
     let sources = [];
     for (let i = 0; i < sides; i++) {
       let angle = i * angleStep;
@@ -236,9 +233,8 @@
       sources.push({ x, y });
     }
 
-    // Create the data for the interference pattern
     let data = [];
-    const gridSize = 100; // reduce the number of points in the grid
+    const gridSize = 30;  // Reducing the grid size further
     for (let x = 0; x < width; x += Math.floor(width / gridSize)) {
       for (let y = 0; y < height; y += Math.floor(height / gridSize)) {
         let displacement = calculateWave(x, y, sources, t);
@@ -259,48 +255,103 @@
 
     const patternData = generateInterferencePattern(sides, amplitude, t);
 
-    // Create heatmap-like data for the chart
+    // Simplified heatmap data
     const data = {
       labels: patternData.map(point => point.x),
       datasets: [{
         label: `Interference Pattern (Polygon with ${sides} sides)`,
-        data: patternData.map(point => ({ x: point.x, y
-              
-            </div>
-          </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../../2%20Gravity/Problem_3/" class="btn btn-neutral float-left" title="Problem 3: Trajectories of a Freely Released Payload Near Earth"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../../4%20Electromagnetism/Problem_1/" class="btn btn-neutral float-right" title="Problem 1">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
+        data: patternData.map(point => ({ x: point.x, y: point.y, r: point.displacement })),
+        backgroundColor: patternData.map(point => `rgba(0, 0, 255, ${Math.abs(point.displacement) / 5})`), // Lower alpha for smoother transition
+        borderWidth: 0
+      }]
+    };
 
-  <hr/>
+    const config = {
+      type: 'scatter',
+      data: data,
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Water Surface Interference Pattern'
+          }
+        },
+        scales: {
+          x: {
+            display: false
+          },
+          y: {
+            display: false
+          }
+        }
+      }
+    };
 
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-  </div>
+    if (interferenceChart) {
+      interferenceChart.destroy();
+    }
+
+    interferenceChart = new Chart(ctx, config);
+  }
+
+  document.getElementById("polygonSidesInput").addEventListener("input", updateChart);
+  document.getElementById("waveAmplitudeInput").addEventListener("input", updateChart);
+
+  updateChart(); // Initial chart
+</script>
+<pre><code>// Create the data for the interference pattern
+let data = [];
+const gridSize = 100; // reduce the number of points in the grid
+for (let x = 0; x &lt; width; x += Math.floor(width / gridSize)) {
+  for (let y = 0; y &lt; height; y += Math.floor(height / gridSize)) {
+    let displacement = calculateWave(x, y, sources, t);
+    data.push({ x: x, y: y, displacement: displacement });
+  }
+}
+
+return data;
+</code></pre>
+<p>}</p>
+<p>const ctx = document.getElementById("interferenceChart").getContext("2d");
+  let interferenceChart = null;</p>
+<p>function updateChart() {
+    const sides = parseInt(document.getElementById("polygonSidesInput").value);
+    const amplitude = parseFloat(document.getElementById("waveAmplitudeInput").value);
+    const t = Date.now() / 1000;  // Use current time as the time variable</p>
+<pre><code>const patternData = generateInterferencePattern(sides, amplitude, t);
+
+// Create heatmap-like data for the chart
+const data = {
+  labels: patternData.map(point =&gt; point.x),
+  datasets: [{
+    label: `Interference Pattern (Polygon with ${sides} sides)`,
+    data: patternData.map(point =&gt; ({ x: point.x, y
+</code></pre>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../../2%20Gravity/Problem_3/" title="Problem 3: Trajectories of a Freely Released Payload Near Earth"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../../4%20Electromagnetism/Problem_1/" title="Problem 1">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+</div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-          
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-
-  <div class="rst-versions" role="note" aria-label="Versions">
-  <span class="rst-current-version" data-toggle="rst-current-version">
-    
-    
-      <span><a href="../../2%20Gravity/Problem_3/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../../4%20Electromagnetism/Problem_1/" style="color: #fcfcfc">Next &raquo;</a></span>
-    
-  </span>
 </div>
-    <script src="../../../js/jquery-3.6.0.min.js"></script>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span><a href="../../2%20Gravity/Problem_3/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../../4%20Electromagnetism/Problem_1/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script src="../../../js/jquery-3.6.0.min.js"></script>
 <script>var base_url = "../../..";</script>
 <script src="../../../js/theme_extra.js"></script>
 <script src="../../../js/theme.js"></script>
@@ -313,5 +364,5 @@
             SphinxRtdTheme.Navigation.enable(true);
         });
     </script>
-</div></div></div></div></section></div></body>
+</body>
 </html>
