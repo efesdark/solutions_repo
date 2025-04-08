@@ -39,9 +39,9 @@ Select a planet to see its cosmic velocities:
 <div id="velocityChart" style="width: 100%; height: 500px;"></div>
 
 <select id="planetSelector">
-  <option value="earth">🌍 Earth</option>
-  <option value="mars">🔴 Mars</option>
-  <option value="jupiter">🟤 Jupiter</option>
+  <option value="earth">Earth</option>
+  <option value="mars"> Mars</option>
+  <option value="jupiter">Jupiter</option>
 </select>
 
 <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
