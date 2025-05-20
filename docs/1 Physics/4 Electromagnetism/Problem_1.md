@@ -169,7 +169,8 @@ function simulate2D() {
 
 <!-- Load Three.js and OrbitControls -->
 <script src="https://unpkg.com/three@0.157.0/build/three.min.js"></script>
-<script src="https://unpkg.com/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+
 
 <script>
 function init3D() {
