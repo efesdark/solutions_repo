@@ -173,6 +173,13 @@ function simulate2D() {
 
 
 <script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@<version>/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@<version>/examples/jsm/"
+  }
+}
 function init3D() {
   const container = document.getElementById("canvas3d");
   container.innerHTML = ""; // Clear previous render
