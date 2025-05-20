@@ -84,6 +84,16 @@
 <ul class="current">
 <li class="toctree-l2 current"><a class="reference internal current" href="#">Problem 1</a>
 <ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="#exploring-the-central-limit-theorem-through-simulations">Exploring the Central Limit Theorem through Simulations</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#motivation">Motivation</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#theoretical-background">Theoretical Background</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#task-simulation-setup">Task &amp; Simulation Setup</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#javascript-simulation-code">JavaScript Simulation Code</a>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../Problem_2/">Problem 2</a>
@@ -171,7 +181,144 @@
 </div>
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
-<h1 id="problem-1">Problem 1</h1>
+<h2 id="problem-1">Problem 1</h2>
+<h3 id="exploring-the-central-limit-theorem-through-simulations">Exploring the Central Limit Theorem through Simulations</h3>
+<hr/>
+<h3 id="motivation">Motivation</h3>
+<p>The <strong>Central Limit Theorem (CLT)</strong> is a fundamental result in statistics which states:</p>
+<blockquote>
+<p><em>The distribution of the sample mean approaches a normal distribution as the sample size <span class="arithmatex">\( n \)</span> increases, regardless of the original population distribution.</em></p>
+</blockquote>
+<p>This theorem is crucial because it justifies why the normal distribution is commonly used in inferential statistics even when the underlying population is not normal.</p>
+<hr/>
+<h3 id="theoretical-background">Theoretical Background</h3>
+<p>Given a population with mean <span class="arithmatex">\( \mu \)</span> and variance <span class="arithmatex">\( \sigma^2 \)</span>, and a sample size <span class="arithmatex">\( n \)</span>, the sampling distribution of the sample mean <span class="arithmatex">\( \bar{X} \)</span> has:</p>
+<ul>
+<li>Mean: <span class="arithmatex">\( \mu_{\bar{X}} = \mu \)</span></li>
+<li>Variance: <span class="arithmatex">\( \sigma^2_{\bar{X}} = \frac{\sigma^2}{n} \)</span></li>
+</ul>
+<p>As <span class="arithmatex">\( n \to \infty \)</span>, the distribution of <span class="arithmatex">\( \bar{X} \)</span> approaches</p>
+<div class="arithmatex">\[
+\bar{X} \sim \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right)
+\]</div>
+<p>regardless of the population distribution shape.</p>
+<hr/>
+<h3 id="task-simulation-setup">Task &amp; Simulation Setup</h3>
+<p><strong>Population Distributions:</strong></p>
+<ol>
+<li>Uniform distribution <span class="arithmatex">\( U(a,b) \)</span></li>
+<li>Exponential distribution with rate <span class="arithmatex">\( \lambda \)</span></li>
+<li>Binomial distribution <span class="arithmatex">\( \text{Binomial}(n, p) \)</span></li>
+</ol>
+<p><strong>Sampling:</strong></p>
+<ul>
+<li>For each distribution, generate a large population (e.g., 10,000 samples).</li>
+<li>Randomly draw samples of size <span class="arithmatex">\( n = 5, 10, 30, 50 \)</span>.</li>
+<li>Compute sample means.</li>
+<li>Repeat sampling multiple times (e.g., 1000 repetitions) to build the sampling distribution of the mean.</li>
+<li>Visualize histograms of sample means.</li>
+</ul>
+<hr/>
+<h3 id="javascript-simulation-code">JavaScript Simulation Code</h3>
+<p>```html</p>
+<div>
+<label>Sample Size: <input id="sampleSize" min="1" type="number" value="30"/></label>
+<label>Repetitions: <input id="repetitions" min="100" type="number" value="1000"/></label>
+<select id="distributionSelect">
+<option value="uniform">Uniform (0,1)</option>
+<option value="exponential">Exponential (λ=1)</option>
+<option value="binomial">Binomial (n=10, p=0.5)</option>
+</select>
+<button onclick="runCLTSimulation()">Run Simulation</button>
+</div>
+<canvas height="400" id="cltCanvas" style="border:1px solid #ccc;margin-top:10px;" width="600"></canvas>
+<script>
+  function getRandomUniform() {
+    return Math.random();
+  }
+
+  function getRandomExponential(lambda=1) {
+    return -Math.log(1 - Math.random()) / lambda;
+  }
+
+  function getRandomBinomial(n=10, p=0.5) {
+    let success = 0;
+    for(let i=0; i<n; i++) {
+      if (Math.random() < p) success++;
+    }
+    return success;
+  }
+
+  function runCLTSimulation() {
+    const sampleSize = parseInt(document.getElementById('sampleSize').value);
+    const repetitions = parseInt(document.getElementById('repetitions').value);
+    const dist = document.getElementById('distributionSelect').value;
+
+    let populationFunc;
+    switch(dist) {
+      case 'uniform': populationFunc = getRandomUniform; break;
+      case 'exponential': populationFunc = () => getRandomExponential(1); break;
+      case 'binomial': populationFunc = () => getRandomBinomial(10, 0.5); break;
+    }
+
+    let sampleMeans = [];
+    for(let i=0; i<repetitions; i++) {
+      let sum = 0;
+      for(let j=0; j<sampleSize; j++) {
+        sum += populationFunc();
+      }
+      sampleMeans.push(sum / sampleSize);
+    }
+
+    drawHistogram(sampleMeans, sampleSize, dist);
+  }
+
+  function drawHistogram(data, sampleSize, dist) {
+    const canvas = document.getElementById('cltCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const bins = 40;
+    const min = Math.min(...data);
+    const max = Math.max(...data);
+    const binWidth = (max - min) / bins;
+    let histogram = new Array(bins).fill(0);
+
+    data.forEach(d => {
+      const idx = Math.min(bins - 1, Math.floor((d - min) / binWidth));
+      histogram[idx]++;
+    });
+
+    const maxCount = Math.max(...histogram);
+
+    // Draw histogram
+    const margin = 40;
+    const graphWidth = canvas.width - 2*margin;
+    const graphHeight = canvas.height - 2*margin;
+
+    ctx.fillStyle = '#007bff';
+    for(let i=0; i<bins; i++) {
+      const x = margin + i * (graphWidth / bins);
+      const height = (histogram[i] / maxCount) * graphHeight;
+      ctx.fillRect(x, margin + graphHeight - height, graphWidth / bins - 2, height);
+    }
+
+    // Axis
+    ctx.strokeStyle = 'black';
+    ctx.beginPath();
+    ctx.moveTo(margin, margin);
+    ctx.lineTo(margin, margin + graphHeight);
+    ctx.lineTo(margin + graphWidth, margin + graphHeight);
+    ctx.stroke();
+
+    // Labels
+    ctx.fillStyle = 'black';
+    ctx.font = '14px Arial';
+    ctx.fillText(`CLT: Sample Size=${sampleSize}, Distribution=${dist}`, margin, margin - 10);
+    ctx.fillText(min.toFixed(2), margin, margin + graphHeight + 15);
+    ctx.fillText(max.toFixed(2), margin + graphWidth - 30, margin + graphHeight + 15);
+  }
+</script>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
