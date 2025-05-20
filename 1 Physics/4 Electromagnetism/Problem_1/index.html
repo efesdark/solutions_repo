@@ -84,6 +84,12 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#4-visualization">4. Visualization</a>
 </li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#2d-simulation">2D Simulation</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#3d-simulation">3D Simulation</a>
+<ul>
 <li class="toctree-l4"><a class="reference internal" href="#suggestions-for-extensions">Suggestions for Extensions</a>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#references">References</a>
@@ -294,237 +300,106 @@ r = \frac{mv_\perp}{|q|B}
 </ul>
 <p>Visualizations provide intuition about the dynamics under different configurations and help relate abstract concepts to practical applications.</p>
 <hr/>
-<!DOCTYPE html>
-
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<title>2D &amp; 3D Lorentz Simülasyonu</title>
-<style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-    }
-
-    .section {
-      border-bottom: 2px solid #ddd;
-      padding: 20px;
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .controls label {
-      min-width: 90px;
-    }
-
-    canvas {
-      border: 1px solid #ccc;
-      width: 100%;
-      height: 400px;
-      display: block;
-    }
-
-    #container3d {
-      width: 100%;
-      height: 500px;
-    }
-  </style>
-</head>
-<body>
-<!-- 2D Simülasyon Bölümü -->
-<div class="section">
-<h2>2D Lorentz Kuvveti Simülasyonu</h2>
-<div class="controls">
-<label>Ex: <input id="Ex2D" type="number" value="0"/></label>
-<label>Ey: <input id="Ey2D" type="number" value="0"/></label>
-<label>Bz: <input id="Bz2D" type="number" value="1"/></label>
-<label>vx: <input id="vx2D" type="number" value="5"/></label>
-<label>vy: <input id="vy2D" type="number" value="0"/></label>
-<label>q: <input id="q2D" type="number" value="1"/></label>
-<label>m: <input id="m2D" type="number" value="1"/></label>
-<button onclick="run2DSimulation()">Simulate 2D</button>
+<h2 id="2d-simulation">2D Simulation</h2>
+<div>
+<label>Magnetic Field B (T): <input id="B2d" type="number" value="1"/></label>
+<label>Charge q (C): <input id="q2d" type="number" value="1"/></label>
+<label>Mass m (kg): <input id="m2d" type="number" value="1"/></label>
+<label>Initial Velocity vx (m/s): <input id="vx2d" type="number" value="1"/></label>
+<label>vy: <input id="vy2d" type="number" value="0"/></label>
+<button onclick="simulate2D()">Simulate 2D</button>
 </div>
-<canvas id="canvas2d"></canvas>
+<canvas height="500" id="canvas2d" style="border:1px solid black;" width="500"></canvas>
+<script>
+function simulate2D() {
+  const canvas = document.getElementById("canvas2d");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const B = parseFloat(document.getElementById("B2d").value);
+  const q = parseFloat(document.getElementById("q2d").value);
+  const m = parseFloat(document.getElementById("m2d").value);
+  const vx0 = parseFloat(document.getElementById("vx2d").value);
+  const vy0 = parseFloat(document.getElementById("vy2d").value);
+
+  let x = 250, y = 250;
+  let vx = vx0, vy = vy0;
+  const dt = 0.1;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+
+  for (let i = 0; i < 3000; i++) {
+    const ax = (q / m) * vy * B;
+    const ay = -(q / m) * vx * B;
+    vx += ax * dt;
+    vy += ay * dt;
+    x += vx * dt;
+    y += vy * dt;
+    ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = "blue";
+  ctx.stroke();
+}
+</script>
+<hr/>
+<h2 id="3d-simulation">3D Simulation</h2>
+<div>
+<label>Initial Velocity X: <input id="vx3d" type="number" value="1"/></label>
+<label>Y: <input id="vy3d" type="number" value="1"/></label>
+<label>Z: <input id="vz3d" type="number" value="1"/></label>
+<button onclick="init3D()">Simulate 3D</button>
 </div>
-<!-- 3D Simülasyon Bölümü -->
-<div class="section">
-<h2>3D Lorentz Kuvveti Simülasyonu</h2>
-<div class="controls">
-<label>Ex: <input id="Ex3D" type="number" value="0"/></label>
-<label>Ey: <input id="Ey3D" type="number" value="0"/></label>
-<label>Ez: <input id="Ez3D" type="number" value="0"/></label>
-<label>Bx: <input id="Bx3D" type="number" value="0"/></label>
-<label>By: <input id="By3D" type="number" value="0"/></label>
-<label>Bz: <input id="Bz3D" type="number" value="1"/></label>
-<label>vx: <input id="vx3D" type="number" value="5"/></label>
-<label>vy: <input id="vy3D" type="number" value="0"/></label>
-<label>vz: <input id="vz3D" type="number" value="0"/></label>
-<label>q: <input id="q3D" type="number" value="1"/></label>
-<label>m: <input id="m3D" type="number" value="1"/></label>
-<button onclick="run3DSimulation()">Simulate 3D</button>
-</div>
-<div id="container3d"></div>
-</div>
-<!-- Three.js Kütüphanesi -->
+<div id="canvas3d" style="width: 100%; height: 400px;"></div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
 <script>
-  // ==== 2D SIMÜLASYON ====
-  const canvas2d = document.getElementById("canvas2d");
-  const ctx2d = canvas2d.getContext("2d");
+function init3D() {
+  const container = document.getElementById("canvas3d");
+  container.innerHTML = ""; // temizle
 
-  function run2DSimulation() {
-    const Ex = parseFloat(document.getElementById("Ex2D").value);
-    const Ey = parseFloat(document.getElementById("Ey2D").value);
-    const Bz = parseFloat(document.getElementById("Bz2D").value);
-    const vx0 = parseFloat(document.getElementById("vx2D").value);
-    const vy0 = parseFloat(document.getElementById("vy2D").value);
-    const q = parseFloat(document.getElementById("q2D").value);
-    const m = parseFloat(document.getElementById("m2D").value);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
 
-    canvas2d.width = canvas2d.clientWidth;
-    canvas2d.height = 400;
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-    ctx2d.clearRect(0, 0, canvas2d.width, canvas2d.height);
-    ctx2d.beginPath();
+  const q = 1, m = 1, B = new THREE.Vector3(0, 0, 1);
+  let v = new THREE.Vector3(
+    parseFloat(document.getElementById("vx3d").value),
+    parseFloat(document.getElementById("vy3d").value),
+    parseFloat(document.getElementById("vz3d").value)
+  );
+  let pos = new THREE.Vector3(0, 0, 0);
+  const dt = 0.05;
 
-    let x = 0, y = 0;
-    let vx = vx0, vy = vy0;
-    const dt = 0.02, steps = 2000, scale = 5;
-
-    ctx2d.moveTo(canvas2d.width / 2, canvas2d.height / 2);
-
-    for (let i = 0; i < steps; i++) {
-      const Fx = q * (Ex + vy * Bz);
-      const Fy = q * (Ey - vx * Bz);
-      const ax = Fx / m, ay = Fy / m;
-      vx += ax * dt;
-      vy += ay * dt;
-      x += vx * dt;
-      y += vy * dt;
-      ctx2d.lineTo(canvas2d.width / 2 + x * scale, canvas2d.height / 2 - y * scale);
-    }
-
-    ctx2d.strokeStyle = "blue";
-    ctx2d.stroke();
+  const geometry = new THREE.BufferGeometry();
+  const positions = [];
+  for (let i = 0; i < 1000; i++) {
+    const F = new THREE.Vector3().crossVectors(v, B).multiplyScalar(q / m);
+    v.add(F.clone().multiplyScalar(dt));
+    pos.add(v.clone().multiplyScalar(dt));
+    positions.push(pos.x, pos.y, pos.z);
   }
 
-  // ==== 3D SIMÜLASYON ====
-  let scene, camera, renderer, controls, line;
-  const container3d = document.getElementById("container3d");
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+  const line = new THREE.Line(geometry, material);
+  scene.add(line);
 
-  function init3D() {
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, container3d.clientWidth / container3d.clientHeight, 0.1, 1000);
-    camera.position.set(50, 50, 50);
-
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize(container3d.clientWidth, container3d.clientHeight);
-    container3d.appendChild(renderer.domElement);
-
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
-    scene.add(new THREE.AxesHelper(20));
-
-    animate();
-  }
-
-  function run3DSimulation() {
-    if (line) scene.remove(line);
-
-    const Ex = parseFloat(document.getElementById("Ex3D").value);
-    const Ey = parseFloat(document.getElementById("Ey3D").value);
-    const Ez = parseFloat(document.getElementById("Ez3D").value);
-    const Bx = parseFloat(document.getElementById("Bx3D").value);
-    const By = parseFloat(document.getElementById("By3D").value);
-    const Bz = parseFloat(document.getElementById("Bz3D").value);
-    const vx0 = parseFloat(document.getElementById("vx3D").value);
-    const vy0 = parseFloat(document.getElementById("vy3D").value);
-    const vz0 = parseFloat(document.getElementById("vz3D").value);
-    const q = parseFloat(document.getElementById("q3D").value);
-    const m = parseFloat(document.getElementById("m3D").value);
-
-    let x = 0, y = 0, z = 0;
-    let vx = vx0, vy = vy0, vz = vz0;
-    const dt = 0.02, steps = 3000;
-    const points = [];
-
-    for (let i = 0; i < steps; i++) {
-      const Fx = q * (Ex + vy * Bz - vz * By);
-      const Fy = q * (Ey + vz * Bx - vx * Bz);
-      const Fz = q * (Ez + vx * By - vy * Bx);
-      const ax = Fx / m, ay = Fy / m, az = Fz / m;
-      vx += ax * dt;
-      vy += ay * dt;
-      vz += az * dt;
-      x += vx * dt;
-      y += vy * dt;
-      z += vz * dt;
-      points.push(new THREE.Vector3(x, y, z));
-    }
-
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
-    line = new THREE.Line(geometry, material);
-    scene.add(line);
-  }
+  scene.add(new THREE.AxesHelper(5));
+  camera.position.set(10, 10, 10);
+  controls.update();
 
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
   }
-
-  init3D();
+  animate();
+}
 </script>
-<!DOCTYPE html>
-
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>3D Test</title>
-<style>
-    body { margin: 0; }
-    #container3d { width: 100%; height: 100vh; }
-  </style>
-</meta></head>
-<body>
-<div id="container3d"></div>
-<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
-<script>
-    const container = document.getElementById('container3d');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.set(30, 30, 30);
-
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    container.appendChild(renderer.domElement);
-
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    scene.add(new THREE.AxesHelper(20));
-
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    }
-    animate();
-  </script>
-</body>
-</html>
-</body>
-</html>
 <hr/>
 <h3 id="suggestions-for-extensions">Suggestions for Extensions</h3>
 <ul>
