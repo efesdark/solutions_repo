@@ -6,13 +6,13 @@
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="../../../img/favicon.ico" rel="shortcut icon"/>
-<title>Circuits - Physics and Mathematics</title>
+<title>Problem 1 - Physics and Mathematics</title>
 <link href="../../../css/theme.css" rel="stylesheet"/>
 <link href="../../../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
 <script>
         // Current page data
-        var mkdocs_page_name = "Circuits";
+        var mkdocs_page_name = "Problem 1";
         var mkdocs_page_input_path = "1 Physics/5 Circuits/Problem_1.md";
         var mkdocs_page_url = null;
       </script>
@@ -76,35 +76,7 @@
 </li>
 <li class="toctree-l1 current"><a class="reference internal current">5 Circuits</a>
 <ul class="current">
-<li class="toctree-l2 current"><a class="reference internal current" href="#">Circuits</a>
-<ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="#problem-1">Problem 1</a>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#equivalent-resistance-using-graph-theory">Equivalent Resistance Using Graph Theory</a>
-</li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#motivation">Motivation</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#fundamental-concepts-and-formulas">Fundamental Concepts and Formulas</a>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#series-resistors">Series Resistors</a>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="#parallel-resistors">Parallel Resistors</a>
-</li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#graph-theory-approach">Graph Theory Approach</a>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#circuit-as-a-graph">Circuit as a Graph</a>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="#simplification-strategy">Simplification Strategy</a>
-</li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#algorithm-description-pseudocode">Algorithm Description (Pseudocode)</a>
-</li>
-</ul>
+<li class="toctree-l2 current"><a class="reference internal current" href="#">Problem 1</a>
 </li>
 </ul>
 </li>
@@ -189,7 +161,7 @@
 <li><a aria-label="Docs" class="icon icon-home" href="../../.."></a></li>
 <li class="breadcrumb-item">1 Physics</li>
 <li class="breadcrumb-item">5 Circuits</li>
-<li class="breadcrumb-item active">Circuits</li>
+<li class="breadcrumb-item active">Problem 1</li>
 <li class="wy-breadcrumbs-aside">
 </li>
 </ul>
@@ -197,63 +169,184 @@
 </div>
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
-<h1 id="circuits">Circuits</h1>
-<h2 id="problem-1">Problem 1</h2>
-<h3 id="equivalent-resistance-using-graph-theory">Equivalent Resistance Using Graph Theory</h3>
-<hr/>
-<h2 id="motivation">Motivation</h2>
-<p>Calculating equivalent resistance is a fundamental problem in electrical circuits, essential for understanding and designing efficient systems. While traditional methods involve iteratively applying series and parallel resistor rules, these approaches can become cumbersome for complex circuits with many components. Graph theory offers a powerful alternative, providing a structured and algorithmic way to analyze circuits.</p>
-<p>By representing a circuit as a graph—where nodes correspond to junctions and edges represent resistors with weights equal to their resistance values—we can systematically simplify even the most intricate networks. This method not only streamlines calculations but also opens the door to automated analysis, making it particularly useful in modern applications like circuit simulation software, optimization problems, and network design.</p>
-<p>Studying equivalent resistance through graph theory is valuable not only for its practical applications but also for the deeper insights it provides into the interplay between electrical and mathematical concepts. This approach highlights the versatility of graph theory, demonstrating its relevance across physics, engineering, and computer science.</p>
-<hr/>
-<h2 id="fundamental-concepts-and-formulas">Fundamental Concepts and Formulas</h2>
-<h3 id="series-resistors">Series Resistors</h3>
-<p>Resistors are in <strong>series</strong> when they are connected end-to-end, and the same current flows through each resistor. The equivalent resistance, <span class="arithmatex">\( R_{eq} \)</span>, is the sum of their resistances:</p>
-<div class="arithmatex">\[
-R_{eq} = R_1 + R_2 + \cdots + R_n
-\]</div>
-<h3 id="parallel-resistors">Parallel Resistors</h3>
-<p>Resistors are in <strong>parallel</strong> when their terminals are connected to the same two nodes, sharing the same voltage across each resistor. The equivalent resistance is found by:</p>
-<div class="arithmatex">\[
-\frac{1}{R_{eq}} = \frac{1}{R_1} + \frac{1}{R_2} + \cdots + \frac{1}{R_n}
-\]</div>
-<p>Or equivalently:</p>
-<div class="arithmatex">\[
-R_{eq} = \left( \sum_{i=1}^n \frac{1}{R_i} \right)^{-1}
-\]</div>
-<hr/>
-<h2 id="graph-theory-approach">Graph Theory Approach</h2>
-<h3 id="circuit-as-a-graph">Circuit as a Graph</h3>
-<ul>
-<li><strong>Nodes</strong> represent circuit junctions.</li>
-<li><strong>Edges</strong> represent resistors, weighted by their resistance.</li>
-</ul>
-<h3 id="simplification-strategy">Simplification Strategy</h3>
-<ul>
-<li><strong>Series Reduction:</strong> If a node connects exactly two edges (resistors in series), combine their resistances by summing and replace with a single edge.</li>
-<li><strong>Parallel Reduction:</strong> If multiple edges connect the same two nodes (parallel resistors), combine using reciprocal sum formula.</li>
-</ul>
-<p>Iterate these steps until only two nodes remain connected by one equivalent resistor.</p>
-<hr/>
-<h2 id="algorithm-description-pseudocode">Algorithm Description (Pseudocode)</h2>
-<p>```python
-def calculate_equivalent_resistance(graph):
-    while number_of_nodes(graph) &gt; 2:
-        for node in graph.nodes:
-            edges = graph.edges_of(node)
-            if len(edges) == 2:
-                # Series reduction
-                r1, r2 = edges[0].weight, edges[1].weight
-                new_r = r1 + r2
-                merge_edges_in_series(graph, node, new_r)
-                break
-            elif multiple_edges_between_two_nodes(graph):
-                # Parallel reduction
-                r_values = get_parallel_resistances(graph)
-                new_r = 1 / sum(1/r for r in r_values)
-                merge_edges_in_parallel(graph, new_r)
-                break
-    return graph.final_edge.weight</p>
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Physics Lab Report</title>
+<style>
+        :root {
+            --primary: #2980b9;
+            --secondary: #7f8c8d;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: var(--primary);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .simulation-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        canvas {
+            border: 1px solid var(--secondary);
+            margin: 10px 0;
+        }
+        .formula {
+            background: #f0f3f4;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+<h1>Circuit Analysis Report</h1>
+<!-- Theory Section -->
+<h2>1. Theoretical Background</h2>
+<div class="formula">
+<strong>Series Resistance:</strong> R<sub>eq</sub> = R₁ + R₂ + ... + Rₙ
+    </div>
+<div class="formula">
+<strong>Parallel Resistance:</strong> 1/R<sub>eq</sub> = 1/R₁ + 1/R₂ + ... + 1/Rₙ
+    </div>
+<!-- Algorithm Section -->
+<h2>2. Reduction Algorithm</h2>
+<pre>
+function reduceGraph(graph):
+    while changes:
+        if series nodes exist:
+            merge resistors in series
+        elif parallel edges exist:
+            merge resistors in parallel
+    return final resistance
+    </pre>
+<!-- Simulation Section -->
+<div class="simulation-box">
+<h3>Interactive Circuit Simulator</h3>
+<canvas height="200" id="circuitCanvas" width="600"></canvas>
+<div class="controls">
+<button onclick="addComponent('series')">Add Series Resistor</button>
+<button onclick="addComponent('parallel')">Add Parallel Resistor</button>
+<button onclick="reset()" style="background: var(--secondary)">Reset</button>
+</div>
+<div>
+<strong>Resistance Value:</strong>
+<input id="resValue" min="1" style="width: 80px;" type="number" value="10"/>
+            Ω
+        </div>
+<h4 style="margin-top:15px;">Equivalent Resistance: 
+            <span id="result" style="color: var(--primary);">0</span> Ω
+        </h4>
+</div>
+<!-- Analysis Section -->
+<h2>3. Complexity Analysis</h2>
+<table style="width:100%; border-collapse: collapse;">
+<tr style="background: var(--primary); color: white;">
+<th style="padding: 8px;">Operation</th>
+<th>Time Complexity</th>
+</tr>
+<tr style="border-bottom: 1px solid #ddd;">
+<td style="padding: 8px;">Series Reduction</td>
+<td>O(n)</td>
+</tr>
+<tr style="border-bottom: 1px solid #ddd;">
+<td style="padding: 8px;">Parallel Reduction</td>
+<td>O(n log n)</td>
+</tr>
+</table>
+<script>
+// Circuit Simulation Logic
+let components = [];
+const canvas = document.getElementById('circuitCanvas');
+const ctx = canvas.getContext('2d');
+
+function drawComponent(x, y, type) {
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+
+    // Draw resistor symbol
+    for(let i = 0; i < 4; i++) {
+        ctx.lineTo(x + 20 + i*30, y + (i%2 ? -15 : 15));
+    }
+
+    ctx.strokeStyle = type === 'series' ? '#e74c3c' : '#3498db';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+}
+
+function drawCircuit() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw base line
+    ctx.beginPath();
+    ctx.moveTo(50, 100);
+    ctx.lineTo(canvas.width-50, 100);
+    ctx.strokeStyle = '#333';
+    ctx.stroke();
+
+    // Draw components
+    let x = 100;
+    components.forEach(comp => {
+        drawComponent(x, 100, comp.type);
+        x += 80;
+    });
+}
+
+function calculateResistance() {
+    let seriesSum = 0;
+    let parallelSum = 0;
+
+    components.forEach(comp => {
+        const value = parseFloat(comp.value);
+        comp.type === 'series' ? seriesSum += value : parallelSum += 1/value;
+    });
+
+    const total = seriesSum + (parallelSum > 0 ? 1/parallelSum : 0);
+    document.getElementById('result').textContent = total.toFixed(2);
+}
+
+function addComponent(type) {
+    const value = document.getElementById('resValue').value;
+    components.push({type: type, value: value});
+    calculateResistance();
+    drawCircuit();
+}
+
+function reset() {
+    components = [];
+    calculateResistance();
+    drawCircuit();
+}
+
+// Initial draw
+drawCircuit();
+</script>
+</body>
+</html>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
