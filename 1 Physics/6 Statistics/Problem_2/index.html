@@ -6,13 +6,13 @@
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="../../../img/favicon.ico" rel="shortcut icon"/>
-<title>Problem 2 - Physics and Mathematics</title>
+<title>Problem 2: Estimating π using Monte Carlo Simulations - Physics and Mathematics</title>
 <link href="../../../css/theme.css" rel="stylesheet"/>
 <link href="../../../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
 <script>
         // Current page data
-        var mkdocs_page_name = "Problem 2";
+        var mkdocs_page_name = "Problem 2: Estimating \u03c0 using Monte Carlo Simulations";
         var mkdocs_page_input_path = "1 Physics/6 Statistics/Problem_2.md";
         var mkdocs_page_url = null;
       </script>
@@ -84,8 +84,18 @@
 <ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../Problem_1/">Problem 1</a>
 </li>
-<li class="toctree-l2 current"><a class="reference internal current" href="#">Problem 2</a>
+<li class="toctree-l2 current"><a class="reference internal current" href="#">Problem 2: Estimating π using Monte Carlo Simulations</a>
 <ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="#objective">Objective</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#method-1-estimating-pi-via-unit-circle-sampling">Method 1: Estimating \( \pi \) via Unit Circle Sampling</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#theoretical-background">Theoretical Background</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#javascript-simulation">JavaScript Simulation</a>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -163,7 +173,7 @@
 <li><a aria-label="Docs" class="icon icon-home" href="../../.."></a></li>
 <li class="breadcrumb-item">1 Physics</li>
 <li class="breadcrumb-item">6 Statistics</li>
-<li class="breadcrumb-item active">Problem 2</li>
+<li class="breadcrumb-item active">Problem 2: Estimating π using Monte Carlo Simulations</li>
 <li class="wy-breadcrumbs-aside">
 </li>
 </ul>
@@ -171,7 +181,73 @@
 </div>
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
-<h1 id="problem-2">Problem 2</h1>
+<h1 id="problem-2-estimating-using-monte-carlo-simulations">Problem 2: Estimating π using Monte Carlo Simulations</h1>
+<h2 id="objective">Objective</h2>
+<p>This report explores two Monte Carlo simulation methods to estimate the mathematical constant <span class="arithmatex">\( \pi \)</span>:</p>
+<ol>
+<li><strong>Geometric Sampling with a Unit Circle</strong></li>
+<li><strong>Buffon's Needle Experiment</strong></li>
+</ol>
+<p>Each method includes theoretical background, JavaScript-based simulation, and observations regarding accuracy and convergence.</p>
+<hr/>
+<h2 id="method-1-estimating-pi-via-unit-circle-sampling">Method 1: Estimating <span class="arithmatex">\( \pi \)</span> via Unit Circle Sampling</h2>
+<h3 id="theoretical-background">Theoretical Background</h3>
+<p>We use a square of side length 2, centered at the origin, with an inscribed circle of radius 1.</p>
+<ul>
+<li>Area of the circle: <span class="arithmatex">\( A_{\text{circle}} = \pi r^2 = \pi \)</span></li>
+<li>Area of the square: <span class="arithmatex">\( A_{\text{square}} = 4 \)</span></li>
+</ul>
+<p>The probability of a random point falling inside the circle is:</p>
+<div class="arithmatex">\[
+\frac{\pi}{4} \quad \Rightarrow \quad \pi \approx 4 \times \frac{\text{Points in circle}}{\text{Total points}}
+\]</div>
+<h3 id="javascript-simulation">JavaScript Simulation</h3>
+<p>```html</p>
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Monte Carlo Pi Estimation - Circle</title>
+<style>
+    canvas { border: 1px solid #ccc; }
+    body { font-family: sans-serif; }
+  </style>
+</head>
+<body>
+<h2>Monte Carlo Simulation: Estimating π (Circle Method)</h2>
+<label>Number of Points: <input id="numPoints" min="100" type="number" value="5000"/></label>
+<button onclick="estimatePi()">Run Simulation</button>
+<p id="piResult"></p>
+<canvas height="400" id="canvas" width="400"></canvas>
+<script>
+    function estimatePi() {
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const N = parseInt(document.getElementById('numPoints').value);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let inside = 0;
+
+      for (let i = 0; i < N; i++) {
+        let x = Math.random() * 2 - 1;
+        let y = Math.random() * 2 - 1;
+        let px = (x + 1) * canvas.width / 2;
+        let py = (y + 1) * canvas.height / 2;
+
+        if (x * x + y * y <= 1) {
+          ctx.fillStyle = 'green';
+          inside++;
+        } else {
+          ctx.fillStyle = 'red';
+        }
+        ctx.fillRect(px, py, 1, 1);
+      }
+
+      const piEstimate = 4 * inside / N;
+      document.getElementById('piResult').innerText = `Estimated π = ${piEstimate.toFixed(6)}`;
+    }
+  </script>
+</body>
+</html>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
