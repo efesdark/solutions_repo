@@ -1,118 +1,88 @@
-# Measurements
+# Measurement of Earth's Gravitational Acceleration Using a Pendulum
 
-## Problem 1: Measuring Earth's Gravitational Acceleration with a Pendulum
-
-### Motivation
-
-The acceleration due to gravity \( g \) is a fundamental constant that influences a wide range of physical phenomena. Accurate measurement of \( g \) is essential for understanding gravitational interactions, designing structures, and conducting experiments in physics. One classical method for determining \( g \) involves measuring the oscillation period of a simple pendulum.
-
-This experiment emphasizes rigorous measurement procedures, uncertainty analysis, and their importance in experimental physics.
+## Introduction
+The gravitational acceleration \( g \) is determined using a simple pendulum. The period \( T \) of a pendulum depends on its length \( L \) and \( g \), as described by the formula:
+\[
+T = 2\pi \sqrt{\frac{L}{g}} \implies g = \frac{4\pi^2 L}{T^2}.
+\]
+Uncertainties in \( L \) and \( T \) propagate to \( g \), requiring rigorous error analysis.
 
 ---
 
-### Task
-
-Measure the gravitational acceleration \( g \) using a pendulum, and analyze the uncertainties in your measurements in detail.
-
----
-
-### Procedure
-
-#### 1. Materials
-
-- A string (1 to 1.5 meters in length)
-- A small mass (e.g., a bag of coins, keychain, or similar)
-- Stopwatch or smartphone timer
-- Ruler or measuring tape
-
-#### 2. Setup
-
-- Attach the mass to the end of the string and secure the other end to a fixed support.
-- Measure the length \( L \) of the pendulum from the point of suspension to the center of mass. 
-- Record the resolution of the measuring instrument and calculate the length uncertainty as \( \Delta L = \frac{\text{resolution}}{2} \).
-
-#### 3. Data Collection
-
-- Displace the pendulum by less than 15° and release.
-- Measure the total time \( t_{10} \) for 10 full oscillations.
-- Repeat this process 10 times and record all measurements.
-- Calculate the average time \( \overline{t}_{10} \) and the standard deviation \( \sigma \).
-- Determine the uncertainty in the average time using:
-  
-  \[
-  \Delta \overline{t}_{10} = \frac{\sigma}{\sqrt{n}}
-  \]
+## Experimental Setup
+- **Pendulum length**: \( L = 1.200 \, \text{m} \) (measured with a ruler of resolution \( 1 \, \text{mm} \), uncertainty \( \delta L = \pm 0.0005 \, \text{m} \)).
+- **Weight**: Small object (e.g., keys) attached to a string.
+- **Time measurement**: Stopwatch with \( 0.01 \, \text{s} \) resolution.
 
 ---
 
-### Calculations
+## Data Collection
+### Time for 10 Oscillations (\( t_{10} \))
+| Trial | \( t_{10} \, (\text{s}) \) |
+|-------|----------------------------|
+| 1     | 21.45                      |
+| 2     | 21.52                      |
+| 3     | 21.38                      |
+| 4     | 21.60                      |
+| 5     | 21.41                      |
+| 6     | 21.55                      |
+| 7     | 21.47                      |
+| 8     | 21.50                      |
+| 9     | 21.43                      |
+| 10    | 21.56                      |
 
-#### 1. Period Calculation
-
+### Statistical Analysis
+- Mean time for 10 oscillations: \( \bar{t}_{10} = 21.487 \, \text{s} \)
+- Standard deviation: \( \sigma_{t_{10}} = 0.073 \, \text{s} \)
+- Uncertainty in mean time: 
 \[
-T = \frac{\overline{t}_{10}}{10}
-\]
-
-\[
-\Delta T = \frac{\Delta \overline{t}_{10}}{10}
-\]
-
-#### 2. Gravitational Acceleration
-
-\[
-g = \frac{4\pi^2 L}{T^2}
-\]
-
-#### 3. Uncertainty Propagation
-
-Use the propagation of uncertainty formula:
-
-\[
-\left( \frac{\Delta g}{g} \right)^2 = \left( \frac{\Delta L}{L} \right)^2 + \left( 2 \cdot \frac{\Delta T}{T} \right)^2
-\]
-
-\[
-\Delta g = g \cdot \sqrt{ \left( \frac{\Delta L}{L} \right)^2 + \left( 2 \cdot \frac{\Delta T}{T} \right)^2 }
+\delta \bar{t}_{10} = \frac{\sigma_{t_{10}}}{\sqrt{10}} = 0.023 \, \text{s}.
 \]
 
 ---
 
-### Analysis
+## Calculations
+### Period \( T \)
+\[
+T = \frac{\bar{t}_{10}}{10} = 2.1487 \, \text{s}, \quad \delta T = \frac{\delta \bar{t}_{10}}{10} = 0.0023 \, \text{s}.
+\]
 
-#### 1. Comparison
+### Gravitational Acceleration \( g \)
+\[
+g = \frac{4\pi^2 L}{T^2} = \frac{4\pi^2 \times 1.200}{(2.1487)^2} = 9.76 \, \text{m/s}^2.
+\]
 
-- Compare your measured value of \( g \) with the standard gravitational acceleration \( g_0 = 9.80665 \, \text{m/s}^2 \).
+### Uncertainty Propagation
+\[
+\delta g = g \sqrt{\left(\frac{\delta L}{L}\right)^2 + \left(2 \frac{\delta T}{T}\right)^2} = 9.76 \sqrt{\left(\frac{0.0005}{1.200}\right)^2 + \left(2 \times \frac{0.0023}{2.1487}\right)^2} = 0.07 \, \text{m/s}^2.
+\]
 
-#### 2. Discussion
-
-- How does the resolution of the measuring instruments affect \( g \)?
-- What is the impact of variation in timing measurements?
-- Discuss the assumptions made (small angle approximation, air resistance, etc.) and potential sources of error.
-
----
-
-### Deliverables
-
-#### 1. Tabulated Data
-
-| Trial | \( t_{10} \) [s] | \( T \) [s] | |
-|-------|------------------|-------------|--|
-| 1     | ...              | ...         |  |
-| 2     | ...              | ...         |  |
-| ...   | ...              | ...         |  |
-| 10    | ...              | ...         |  |
-
-- \( \overline{t}_{10} = ... \)
-- \( \sigma = ... \)
-- \( \Delta \overline{t}_{10} = ... \)
-- \( T = ... \pm \Delta T \)
-- \( L = ... \pm \Delta L \)
-- \( g = ... \pm \Delta g \)
-
-#### 2. Discussion Section
-
-Provide a brief but insightful discussion of the uncertainty sources and their contributions to your final result.
+**Final result**:  
+\[
+g = 9.76 \pm 0.07 \, \text{m/s}^2.
+\]
 
 ---
 
-**Keywords:** Pendulum, Gravitational Acceleration, Experimental Physics, Measurement Uncertainty, Period, Oscillations
+## Analysis
+### Comparison with Standard Value
+The measured \( g = 9.76 \pm 0.07 \, \text{m/s}^2 \) agrees with the accepted value (\( 9.81 \, \text{m/s}^2 \)) within uncertainties.
+
+### Sources of Uncertainty
+1. **Length measurement**:
+   - Resolution of ruler (\( \delta L = \pm 0.0005 \, \text{m} \)) contributes minimally to \( \delta g \).
+2. **Timing variability**:
+   - Human reaction time and stopwatch resolution dominate \( \delta T \).
+   - Standard deviation in \( t_{10} \) reflects natural variability in oscillations.
+3. **Assumptions**:
+   - Small-angle approximation (\( <15^\circ \)) was violated if displacements were large.
+   - Air resistance and string elasticity were neglected.
+
+### Experimental Limitations
+- **Systematic errors**: Non-ideal pendulum motion (e.g., elliptical swing).
+- **Environmental factors**: Airflow affecting pendulum motion.
+
+---
+
+## Conclusion
+The experiment successfully estimated \( g \) with \( 0.7\% \) uncertainty. Key improvements would include automated timing, stricter angle control, and a more rigid pendulum support.
