@@ -115,7 +115,7 @@ We aim to produce labeled and annotated plots showing:
 Visualizations provide intuition about the dynamics under different configurations and help relate abstract concepts to practical applications.
 
 ---
-<!-- ===================== 2D SIMULATION ===================== -->
+<!-- ===================== 2D SIMULATION (Orjinal Kod) ===================== -->
 <h2>2D Lorentz Force Simulation</h2>
 <div>
   <label>Initial Velocity X: <input type="number" id="vx2d" value="1"></label>
@@ -157,80 +157,82 @@ function simulate2D() {
 
 <hr>
 
-<!-- ===================== 3D SIMULATION ===================== -->
+<!-- ===================== 3D SIMULATION (Plotly.js ile) ===================== -->
 <h2>3D Lorentz Force Simulation</h2>
 <div>
-  <label>Initial Velocity X: <input type="number" id="vx3d" value="1"></label>
-  <label>Y: <input type="number" id="vy3d" value="1"></label>
-  <label>Z: <input type="number" id="vz3d" value="1"></label>
-  <button onclick="init3D()">Simulate 3D</button>
+  <label>Initial Velocity X: <input type="number" id="vx3d" value="1" step="0.1"></label>
+  <label>Y: <input type="number" id="vy3d" value="1" step="0.1"></label>
+  <label>Z: <input type="number" id="vz3d" value="1" step="0.1"></label>
+  <button onclick="simulate3D()">Simulate 3D</button>
 </div>
-<div id="canvas3d" style="width: 100%; height: 400px; border: 1px solid #000;"></div>
+<div id="plot3d" style="width: 600px; height: 400px; border:1px solid #000;"></div>
 
-<!-- Load Three.js and OrbitControls -->
-<script src="https://unpkg.com/three@0.157.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
-
+<!-- Plotly.js CDN -->
+<script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
 
 <script>
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@<version>/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@<version>/examples/jsm/"
-  }
-}
-function init3D() {
-  const container = document.getElementById("canvas3d");
-  container.innerHTML = ""; // Clear previous render
-
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer();
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  container.appendChild(renderer.domElement);
-
-  const controls = new THREE.OrbitControls(camera, renderer.domElement);
-  camera.position.set(10, 10, 10);
-  controls.update();
-
+function simulate3D() {
   const q = 1, m = 1;
-  const B = new THREE.Vector3(0, 0, 1);
-  let v = new THREE.Vector3(
-    parseFloat(document.getElementById("vx3d").value),
-    parseFloat(document.getElementById("vy3d").value),
-    parseFloat(document.getElementById("vz3d").value)
-  );
-  let pos = new THREE.Vector3(0, 0, 0);
+  const B = [0, 0, 1];
+
+  let vx = parseFloat(document.getElementById("vx3d").value);
+  let vy = parseFloat(document.getElementById("vy3d").value);
+  let vz = parseFloat(document.getElementById("vz3d").value);
+
+  let x = 0, y = 0, z = 0;
   const dt = 0.05;
 
-  const geometry = new THREE.BufferGeometry();
-  const positions = [];
+  const xs = [];
+  const ys = [];
+  const zs = [];
 
   for (let i = 0; i < 1000; i++) {
-    const F = new THREE.Vector3().crossVectors(v, B).multiplyScalar(q / m);
-    v.add(F.clone().multiplyScalar(dt));
-    pos.add(v.clone().multiplyScalar(dt));
-    positions.push(pos.x, pos.y, pos.z);
+    // Lorentz force: F = q * v x B
+    const Fx = q * (vy * B[2] - vz * B[1]);
+    const Fy = q * (vz * B[0] - vx * B[2]);
+    const Fz = q * (vx * B[1] - vy * B[0]);
+
+    // Acceleration a = F/m
+    const ax = Fx / m;
+    const ay = Fy / m;
+    const az = Fz / m;
+
+    // Velocity update
+    vx += ax * dt;
+    vy += ay * dt;
+    vz += az * dt;
+
+    // Position update
+    x += vx * dt;
+    y += vy * dt;
+    z += vz * dt;
+
+    xs.push(x);
+    ys.push(y);
+    zs.push(z);
   }
 
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
-  const line = new THREE.Line(geometry, material);
-  scene.add(line);
+  const trace = {
+    x: xs,
+    y: ys,
+    z: zs,
+    mode: 'lines',
+    type: 'scatter3d',
+    line: { color: 'red', width: 3 }
+  };
 
-  scene.add(new THREE.AxesHelper(5));
+  const layout = {
+    margin: { l: 0, r: 0, b: 0, t: 0 },
+    scene: {
+      xaxis: { title: 'X' },
+      yaxis: { title: 'Y' },
+      zaxis: { title: 'Z' },
+    }
+  };
 
-  function animate() {
-    requestAnimationFrame(animate);
-    controls.update();
-    renderer.render(scene, camera);
-  }
-
-  animate();
+  Plotly.newPlot('plot3d', [trace], layout);
 }
 </script>
-
 
 
 
