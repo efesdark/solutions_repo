@@ -6,13 +6,13 @@
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="../../../img/favicon.ico" rel="shortcut icon"/>
-<title>Simulating the Effects of the Lorentz Force - Physics and Mathematics</title>
+<title>Problem 1 - Physics and Mathematics</title>
 <link href="../../../css/theme.css" rel="stylesheet"/>
 <link href="../../../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
 <script>
         // Current page data
-        var mkdocs_page_name = "Simulating the Effects of the Lorentz Force";
+        var mkdocs_page_name = "Problem 1";
         var mkdocs_page_input_path = "1 Physics/5 Circuits/Problem_1.md";
         var mkdocs_page_url = null;
       </script>
@@ -76,21 +76,7 @@
 </li>
 <li class="toctree-l1 current"><a class="reference internal current">5 Circuits</a>
 <ul class="current">
-<li class="toctree-l2 current"><a class="reference internal current" href="#">Simulating the Effects of the Lorentz Force</a>
-<ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="#1-introduction-and-applications">1. Introduction and Applications</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#2-simulation-of-particle-motion">2. Simulation of Particle Motion</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#3-numerical-method">3. Numerical Method</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#4-interactive-simulation">4. Interactive Simulation</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#5-discussion">5. Discussion</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#6-extensions">6. Extensions</a>
-</li>
-</ul>
+<li class="toctree-l2 current"><a class="reference internal current" href="#">Problem 1</a>
 </li>
 </ul>
 </li>
@@ -175,7 +161,7 @@
 <li><a aria-label="Docs" class="icon icon-home" href="../../.."></a></li>
 <li class="breadcrumb-item">1 Physics</li>
 <li class="breadcrumb-item">5 Circuits</li>
-<li class="breadcrumb-item active">Simulating the Effects of the Lorentz Force</li>
+<li class="breadcrumb-item active">Problem 1</li>
 <li class="wy-breadcrumbs-aside">
 </li>
 </ul>
@@ -183,115 +169,151 @@
 </div>
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
-<h1 id="simulating-the-effects-of-the-lorentz-force">Simulating the Effects of the Lorentz Force</h1>
-<h2 id="1-introduction-and-applications">1. Introduction and Applications</h2>
-<p>The Lorentz force, expressed as <strong>F = q(E + v × B)</strong>, governs the motion of charged particles in electric and magnetic fields. It is fundamental in fields such as plasma physics, particle accelerators, and astrophysics.</p>
-<p>Key systems involving Lorentz force:
-- Particle accelerators (e.g., cyclotrons)
-- Mass spectrometers
-- Magnetic confinement in plasma physics</p>
-<p>Electric fields (E) accelerate charged particles, while magnetic fields (B) change their direction of motion, leading to complex trajectories.</p>
-<h2 id="2-simulation-of-particle-motion">2. Simulation of Particle Motion</h2>
-<p>We implement a numerical simulation of a charged particle's trajectory under various field conditions:</p>
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Circuit Analysis Report: Equivalent Resistance with Graph Theory</title>
+<style>
+        body {font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px}
+        .theory {background: #f8f9fa; padding: 15px; border-radius: 5px}
+        .simulation {margin: 30px 0; border: 1px solid #ddd; padding: 20px}
+        canvas {border: 1px solid #999}
+        input[type="number"] {width: 100px; margin: 5px}
+    </style>
+</head>
+<body>
+<h1>Equivalent Resistance Using Graph Theory</h1>
+<!-- Theory Section -->
+<div class="theory">
+<h2>1. Theoretical Background</h2>
+<h3>Key Formulas</h3>
 <ul>
-<li>Uniform magnetic field</li>
-<li>Combined uniform electric and magnetic fields</li>
-<li>Crossed electric and magnetic fields</li>
+<li>Series Resistors: R<sub>eq</sub> = R₁ + R₂ + ... + Rₙ</li>
+<li>Parallel Resistors: 1/R<sub>eq</sub> = 1/R₁ + 1/R₂ + ... + 1/Rₙ</li>
 </ul>
-<p>Parameters such as charge (q), mass (m), initial velocity (v), and field strengths (E, B) can be adjusted.</p>
-<h2 id="3-numerical-method">3. Numerical Method</h2>
-<p>We use the Euler method for integrating the equations of motion:</p>
-<div class="arithmatex">\[
-\mathbf{F} = q(\mathbf{E} + \mathbf{v} \times \mathbf{B}) = m \frac{d\mathbf{v}}{dt}
-\]</div>
-<p>At each time step:</p>
-<p>[
-\mathbf{a} = \frac{\mathbf{F}}{m}
-]
-[
-\mathbf{v}<em t_1="t+1">{t+1} = \mathbf{v}_t + \mathbf{a} \Delta t
-]
-[
-\mathbf{r}</em>} = \mathbf{r<em t_1="t+1">t + \mathbf{v}</em> \Delta t
-]</p>
-<h2 id="4-interactive-simulation">4. Interactive Simulation</h2>
-<p>Below is an interactive JavaScript simulation embedded directly in the page. You can modify parameters and visualize the particle's trajectory in 2D.</p>
-<div>
-<label>Charge (q): <input id="q" step="0.1" type="number" value="1"/></label>
-<label>Mass (m): <input id="m" step="0.1" type="number" value="1"/></label>
-<label>Electric Field Ex: <input id="Ex" step="0.1" type="number" value="0"/></label>
-<label>Electric Field Ey: <input id="Ey" step="0.1" type="number" value="0"/></label>
-<label>Magnetic Field Bz: <input id="Bz" step="0.1" type="number" value="1"/></label><br/>
-<label>Initial Velocity Vx: <input id="Vx" step="0.1" type="number" value="1"/></label>
-<label>Initial Velocity Vy: <input id="Vy" step="0.1" type="number" value="0"/></label>
-<button onclick="runSimulation()">Run Simulation</button>
+<h3>Graph Theory Approach</h3>
+<p>Representation principles:</p>
+<pre>
+        Graph G = (V, E)
+        V: Nodes (circuit junctions)
+        E: Edges (resistors with weights)
+        </pre>
+<h3>Reduction Algorithm</h3>
+<pre>
+        function equivalent_resistance(graph):
+            while graph has reducible components:
+                if series_node exists:
+                    merge R = R1 + R2
+                elif parallel_edges exist:
+                    merge 1/R = 1/R1 + 1/R2
+            return final resistance
+        </pre>
 </div>
-<canvas height="400" id="lorentzCanvas" style="border:1px solid #000;" width="600"></canvas>
+<!-- Interactive Simulation -->
+<div class="simulation">
+<h2>2. Circuit Simulator</h2>
+<canvas height="300" id="circuitCanvas" width="600"></canvas>
+<div>
+<h3>Resistor Controls</h3>
+<button onclick="addResistor('series')">Add Series Resistor</button>
+<button onclick="addResistor('parallel')">Add Parallel Resistor</button>
+<button onclick="resetCircuit()">Reset</button><br/>
+            Resistance Value: <input id="resValue" min="1" step="1" type="number" value="10"/>
+</div>
+<div id="result" style="margin-top:15px; font-weight:bold"></div>
+</div>
+<!-- Algorithm Explanation -->
+<div class="theory">
+<h2>3. Algorithm Implementation</h2>
+<h3>Pseudocode</h3>
+<pre>
+        function reduceGraph(graph):
+            while changes occur:
+                // Series reduction
+                for node in nodes:
+                    if degree(node) == 2:
+                        R_total = sum(adjacent edges)
+                        replace with single edge R_total
+
+                // Parallel reduction
+                for edge_pair in edges:
+                    if same start/end nodes:
+                        R_total = 1/(sum(1/R))
+                        replace with single edge R_total
+        </pre>
+<h3>Complexity Analysis</h3>
+<table border="1">
+<tr><th>Operation</th><th>Time Complexity</th></tr>
+<tr><td>Series Detection</td><td>O(V)</td></tr>
+<tr><td>Parallel Detection</td><td>O(E)</td></tr>
+<tr><td>Total</td><td>O(V+E) per iteration</td></tr>
+</table>
+</div>
 <script>
-function runSimulation() {
-  const q = parseFloat(document.getElementById("q").value);
-  const m = parseFloat(document.getElementById("m").value);
-  const Ex = parseFloat(document.getElementById("Ex").value);
-  const Ey = parseFloat(document.getElementById("Ey").value);
-  const Bz = parseFloat(document.getElementById("Bz").value);
-  let Vx = parseFloat(document.getElementById("Vx").value);
-  let Vy = parseFloat(document.getElementById("Vy").value);
+// Circuit Simulation Logic
+let resistors = [];
+let totalResistance = 0;
 
-  const canvas = document.getElementById("lorentzCanvas");
-  const ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+function calculateEquivalent() {
+    let seriesSum = 0;
+    let parallelSum = 0;
 
-  // Initial position in middle
-  let x = canvas.width / 2;
-  let y = canvas.height / 2;
+    resistors.forEach(r => {
+        if(r.type === 'series') seriesSum += r.value;
+        else parallelSum += 1/r.value;
+    });
 
-  const dt = 0.1; 
-  ctx.beginPath();
-  ctx.moveTo(x, y);
+    totalResistance = seriesSum + (parallelSum > 0 ? 1/parallelSum : 0);
+    document.getElementById('result').innerHTML = 
+        `Equivalent Resistance: ${totalResistance.toFixed(2)} Ω`;
+    drawCircuit();
+}
 
-  for(let i=0; i<1000; i++) {
-    // Lorentz Force components
-    const Fx = q * (Ex + Vy * Bz);
-    const Fy = q * (Ey - Vx * Bz);
+function addResistor(type) {
+    const value = parseFloat(document.getElementById('resValue').value);
+    resistors.push({type: type, value: value});
+    calculateEquivalent();
+}
 
-    // Acceleration
-    const ax = Fx / m;
-    const ay = Fy / m;
+function resetCircuit() {
+    resistors = [];
+    calculateEquivalent();
+}
 
-    // Update velocity
-    Vx += ax * dt;
-    Vy += ay * dt;
+// Canvas Drawing
+function drawCircuit() {
+    const canvas = document.getElementById('circuitCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Update position
-    x += Vx;
-    y += Vy;
+    // Draw circuit base
+    ctx.beginPath();
+    ctx.moveTo(50, 150);
+    ctx.lineTo(550, 150);
+    ctx.strokeStyle = '#333';
+    ctx.stroke();
 
-    ctx.lineTo(x, y);
-  }
+    // Draw resistors
+    let x = 100;
+    resistors.forEach(r => {
+        drawResistor(ctx, x, 150, r.type);
+        x += 100;
+    });
+}
 
-  ctx.strokeStyle = "blue";
-  ctx.lineWidth = 2;
-  ctx.stroke();
+function drawResistor(ctx, x, y, type) {
+    ctx.beginPath();
+    ctx.moveTo(x-30, y);
+    ctx.lineTo(x+30, y);
+    ctx.strokeStyle = type === 'series' ? '#d32f2f' : '#1976d2';
+    ctx.lineWidth = 2;
+    ctx.stroke();
 }
 </script>
-<hr/>
-<h2 id="5-discussion">5. Discussion</h2>
-<p>The results demonstrate classical behaviors such as:</p>
-<ul>
-<li>Circular motion in uniform magnetic fields (Larmor orbits)</li>
-<li>Helical paths with combined E and B fields</li>
-<li>Drift motion with crossed fields</li>
-</ul>
-<p>These phenomena underpin technologies like cyclotrons and magnetic traps used in plasma confinement.</p>
-<hr/>
-<h2 id="6-extensions">6. Extensions</h2>
-<p>Possible extensions include:</p>
-<ul>
-<li>3D trajectory visualization</li>
-<li>More accurate numerical methods (Runge-Kutta)</li>
-<li>Non-uniform or time-dependent fields</li>
-<li>Multiple particle simulations</li>
-</ul>
+</body>
+</html>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
