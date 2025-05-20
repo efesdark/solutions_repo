@@ -115,18 +115,14 @@ We aim to produce labeled and annotated plots showing:
 Visualizations provide intuition about the dynamics under different configurations and help relate abstract concepts to practical applications.
 
 ---
-## 2D Simulation
-
+<!-- ===================== 2D SIMULATION ===================== -->
+<h2>2D Lorentz Force Simulation</h2>
 <div>
-  <label>Magnetic Field B (T): <input type="number" id="B2d" value="1"></label>
-  <label>Charge q (C): <input type="number" id="q2d" value="1"></label>
-  <label>Mass m (kg): <input type="number" id="m2d" value="1"></label>
-  <label>Initial Velocity vx (m/s): <input type="number" id="vx2d" value="1"></label>
-  <label>vy: <input type="number" id="vy2d" value="0"></label>
+  <label>Initial Velocity X: <input type="number" id="vx2d" value="1"></label>
+  <label>Y: <input type="number" id="vy2d" value="1"></label>
   <button onclick="simulate2D()">Simulate 2D</button>
 </div>
-
-<canvas id="canvas2d" width="500" height="500" style="border:1px solid black;"></canvas>
+<canvas id="canvas2d" width="500" height="400" style="border:1px solid #000;"></canvas>
 
 <script>
 function simulate2D() {
@@ -134,52 +130,51 @@ function simulate2D() {
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const B = parseFloat(document.getElementById("B2d").value);
-  const q = parseFloat(document.getElementById("q2d").value);
-  const m = parseFloat(document.getElementById("m2d").value);
-  const vx0 = parseFloat(document.getElementById("vx2d").value);
-  const vy0 = parseFloat(document.getElementById("vy2d").value);
-
-  let x = 250, y = 250;
-  let vx = vx0, vy = vy0;
+  const q = 1, m = 1, Bz = 1;
+  let vx = parseFloat(document.getElementById("vx2d").value);
+  let vy = parseFloat(document.getElementById("vy2d").value);
+  let x = canvas.width / 2;
+  let y = canvas.height / 2;
   const dt = 0.1;
+
   ctx.beginPath();
   ctx.moveTo(x, y);
 
-  for (let i = 0; i < 3000; i++) {
-    const ax = (q / m) * vy * B;
-    const ay = -(q / m) * vx * B;
-    vx += ax * dt;
-    vy += ay * dt;
-    x += vx * dt;
-    y += vy * dt;
+  for (let i = 0; i < 1000; i++) {
+    const Fx = q * vy * Bz;
+    const Fy = -q * vx * Bz;
+    vx += (Fx / m) * dt;
+    vy += (Fy / m) * dt;
+    x += vx;
+    y += vy;
     ctx.lineTo(x, y);
   }
+
   ctx.strokeStyle = "blue";
   ctx.stroke();
 }
 </script>
 
----
+<hr>
 
-## 3D Simulation
-
+<!-- ===================== 3D SIMULATION ===================== -->
+<h2>3D Lorentz Force Simulation</h2>
 <div>
   <label>Initial Velocity X: <input type="number" id="vx3d" value="1"></label>
   <label>Y: <input type="number" id="vy3d" value="1"></label>
   <label>Z: <input type="number" id="vz3d" value="1"></label>
   <button onclick="init3D()">Simulate 3D</button>
 </div>
+<div id="canvas3d" style="width: 100%; height: 400px; border: 1px solid #000;"></div>
 
-<div id="canvas3d" style="width: 100%; height: 400px;"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
+<!-- Load Three.js and OrbitControls -->
+<script src="https://unpkg.com/three@0.157.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
 
 <script>
 function init3D() {
   const container = document.getElementById("canvas3d");
-  container.innerHTML = ""; // temizle
+  container.innerHTML = ""; // Clear previous render
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
@@ -188,8 +183,11 @@ function init3D() {
   container.appendChild(renderer.domElement);
 
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  camera.position.set(10, 10, 10);
+  controls.update();
 
-  const q = 1, m = 1, B = new THREE.Vector3(0, 0, 1);
+  const q = 1, m = 1;
+  const B = new THREE.Vector3(0, 0, 1);
   let v = new THREE.Vector3(
     parseFloat(document.getElementById("vx3d").value),
     parseFloat(document.getElementById("vy3d").value),
@@ -200,6 +198,7 @@ function init3D() {
 
   const geometry = new THREE.BufferGeometry();
   const positions = [];
+
   for (let i = 0; i < 1000; i++) {
     const F = new THREE.Vector3().crossVectors(v, B).multiplyScalar(q / m);
     v.add(F.clone().multiplyScalar(dt));
@@ -213,14 +212,13 @@ function init3D() {
   scene.add(line);
 
   scene.add(new THREE.AxesHelper(5));
-  camera.position.set(10, 10, 10);
-  controls.update();
 
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
   }
+
   animate();
 }
 </script>
