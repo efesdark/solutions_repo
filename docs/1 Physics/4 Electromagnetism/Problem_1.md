@@ -118,169 +118,170 @@ Visualizations provide intuition about the dynamics under different configuratio
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Lorentz Force Simulator</title>
+  <meta charset="UTF-8">
+  <title>2D & 3D Lorentz Force Simulator</title>
   <style>
-    canvas { border: 1px solid #000; background: #f8f8f8; }
-    input { width: 60px; margin-right: 10px; }
-        body { margin: 0; overflow: hidden; font-family: sans-serif; }
-    #controls {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(255,255,255,0.9);
-      padding: 10px;
-      border-radius: 8px;
-      z-index: 10;
+    body {
+      margin: 0;
+      font-family: sans-serif;
     }
-    label { display: block; margin: 5px 0; }
-    input { width: 60px; }
-    canvas { display: block; }
-    
+    #controls {
+      padding: 10px;
+      background: #f0f0f0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    #controls label {
+      margin-right: 10px;
+    }
+    #simulations {
+      display: flex;
+      flex-direction: row;
+      height: calc(100vh - 100px);
+    }
+    #canvas2d {
+      flex: 1;
+      border: 1px solid #ccc;
+    }
+    #container3d {
+      flex: 1;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
   </style>
 </head>
 <body>
-  <h2>Lorentz Force Simulator (2D)</h2>
-
-  <div>
-    <label>Electric Field Ex (V/m): <input type="number" id="Ex" value="0" /></label>
-    <label>Magnetic Field Bz (T): <input type="number" id="Bz" value="1" /></label>
-    <label>Initial Velocity vx (m/s): <input type="number" id="vx" value="10" /></label>
-    <label>vy (m/s): <input type="number" id="vy" value="0" /></label>
-    <label>Charge q (C): <input type="number" id="q" value="1" /></label>
-    <label>Mass m (kg): <input type="number" id="m" value="1" /></label>
-    <button onclick="startSimulation()">Start</button>
-  </div>
-
-  <canvas id="canvas" width="600" height="600"></canvas>
-
 
 <div id="controls">
-  <label>Ex: <input type="number" id="Ex" value="0" /></label>
-  <label>Ey: <input type="number" id="Ey" value="0" /></label>
-  <label>Ez: <input type="number" id="Ez" value="0" /></label>
-  <label>Bx: <input type="number" id="Bx" value="0" /></label>
-  <label>By: <input type="number" id="By" value="0" /></label>
-  <label>Bz: <input type="number" id="Bz" value="1" /></label>
-  <label>vx: <input type="number" id="vx" value="5" /></label>
-  <label>vy: <input type="number" id="vy" value="0" /></label>
-  <label>vz: <input type="number" id="vz" value="0" /></label>
-  <label>Charge (q): <input type="number" id="q" value="1" /></label>
-  <label>Mass (m): <input type="number" id="m" value="1" /></label>
-  <button onclick="startSimulation()">Start</button>
+  <label>Ex: <input type="number" id="Ex" value="0"></label>
+  <label>Ey: <input type="number" id="Ey" value="0"></label>
+  <label>Ez: <input type="number" id="Ez" value="0"></label>
+  <label>Bx: <input type="number" id="Bx" value="0"></label>
+  <label>By: <input type="number" id="By" value="0"></label>
+  <label>Bz: <input type="number" id="Bz" value="1"></label>
+  <label>vx: <input type="number" id="vx" value="5"></label>
+  <label>vy: <input type="number" id="vy" value="0"></label>
+  <label>vz: <input type="number" id="vz" value="0"></label>
+  <label>q: <input type="number" id="q" value="1"></label>
+  <label>m: <input type="number" id="m" value="1"></label>
+  <button onclick="startSimulations()">Simulate</button>
 </div>
 
+<div id="simulations">
+  <canvas id="canvas2d"></canvas>
+  <div id="container3d"></div>
+</div>
 
-
+<!-- Three.js Kütüphanesi -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
-  <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
 
-    function startSimulation() {
-      // Read parameters
-      const Ex = parseFloat(document.getElementById('Ex').value);
-      const Bz = parseFloat(document.getElementById('Bz').value);
-      const vx0 = parseFloat(document.getElementById('vx').value);
-      const vy0 = parseFloat(document.getElementById('vy').value);
-      const q = parseFloat(document.getElementById('q').value);
-      const m = parseFloat(document.getElementById('m').value);
+<script>
+  // Ortak parametre okuma fonksiyonu
+  function getParams() {
+    return {
+      Ex: parseFloat(document.getElementById("Ex").value),
+      Ey: parseFloat(document.getElementById("Ey").value),
+      Ez: parseFloat(document.getElementById("Ez").value),
+      Bx: parseFloat(document.getElementById("Bx").value),
+      By: parseFloat(document.getElementById("By").value),
+      Bz: parseFloat(document.getElementById("Bz").value),
+      vx: parseFloat(document.getElementById("vx").value),
+      vy: parseFloat(document.getElementById("vy").value),
+      vz: parseFloat(document.getElementById("vz").value),
+      q: parseFloat(document.getElementById("q").value),
+      m: parseFloat(document.getElementById("m").value)
+    };
+  }
 
-      // Initial state
-      let x = width / 2, y = height / 2;
-      let vx = vx0, vy = vy0;
-      const dt = 0.1;
+  // ===== 2D Simülasyon =====
+  const canvas2d = document.getElementById("canvas2d");
+  const ctx2d = canvas2d.getContext("2d");
 
-      // Clear canvas
-      ctx.clearRect(0, 0, width, height);
-      ctx.beginPath();
-      ctx.moveTo(x, y);
+  function run2DSimulation(params) {
+    const { Ex, Ey, Bz, vx, vy, q, m } = params;
+    canvas2d.width = canvas2d.clientWidth;
+    canvas2d.height = canvas2d.clientHeight;
+    ctx2d.clearRect(0, 0, canvas2d.width, canvas2d.height);
 
-      let steps = 2000;
-      function step() {
-        for (let i = 0; i < 10; i++) {
-          const Fx = q * (Ex + vy * Bz);
-          const Fy = q * (-vx * Bz);
+    let x = 0, y = 0;
+    let vx_ = vx, vy_ = vy;
+    const dt = 0.02;
+    const steps = 2000;
+    const scale = 5;
 
-          const ax = Fx / m;
-          const ay = Fy / m;
+    ctx2d.beginPath();
+    ctx2d.moveTo(canvas2d.width / 2, canvas2d.height / 2);
 
-          vx += ax * dt;
-          vy += ay * dt;
-          x += vx * dt;
-          y += vy * dt;
+    for (let i = 0; i < steps; i++) {
+      const Fx = q * (Ex + vy_ * Bz);
+      const Fy = q * (Ey - vx_ * Bz);
+      const ax = Fx / m;
+      const ay = Fy / m;
 
-          ctx.lineTo(x, y);
-        }
-        ctx.stroke();
+      vx_ += ax * dt;
+      vy_ += ay * dt;
 
-        steps -= 10;
-        if (steps > 0) requestAnimationFrame(step);
-      }
+      x += vx_ * dt;
+      y += vy_ * dt;
 
-      step();
+      ctx2d.lineTo(canvas2d.width / 2 + x * scale, canvas2d.height / 2 - y * scale);
     }
 
-      let scene, camera, renderer, controls, line;
-  let points = [];
+    ctx2d.strokeStyle = "blue";
+    ctx2d.stroke();
+  }
 
-  function initScene() {
+  // ===== 3D Simülasyon =====
+  let scene, camera, renderer, controls, line;
+  const container3d = document.getElementById("container3d");
+
+  function init3D() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    camera = new THREE.PerspectiveCamera(75, container3d.clientWidth / container3d.clientHeight, 0.1, 1000);
     camera.position.set(50, 50, 50);
 
     renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    renderer.setSize(container3d.clientWidth, container3d.clientHeight);
+    container3d.appendChild(renderer.domElement);
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     scene.add(new THREE.AxesHelper(20));
+
+    animate();
   }
 
-  function startSimulation() {
+  function run3DSimulation(params) {
     if (line) scene.remove(line);
-    points = [];
-
-    // Read input
-    const Ex = parseFloat(document.getElementById("Ex").value);
-    const Ey = parseFloat(document.getElementById("Ey").value);
-    const Ez = parseFloat(document.getElementById("Ez").value);
-    const Bx = parseFloat(document.getElementById("Bx").value);
-    const By = parseFloat(document.getElementById("By").value);
-    const Bz = parseFloat(document.getElementById("Bz").value);
-    let vx = parseFloat(document.getElementById("vx").value);
-    let vy = parseFloat(document.getElementById("vy").value);
-    let vz = parseFloat(document.getElementById("vz").value);
-    const q = parseFloat(document.getElementById("q").value);
-    const m = parseFloat(document.getElementById("m").value);
+    const { Ex, Ey, Ez, Bx, By, Bz, vx, vy, vz, q, m } = params;
 
     let x = 0, y = 0, z = 0;
+    let vx_ = vx, vy_ = vy, vz_ = vz;
     const dt = 0.02;
     const steps = 3000;
+    const points = [];
 
     for (let i = 0; i < steps; i++) {
-      // Lorentz force F = q(E + v × B)
-      const Fx = q * (Ex + vy * Bz - vz * By);
-      const Fy = q * (Ey + vz * Bx - vx * Bz);
-      const Fz = q * (Ez + vx * By - vy * Bx);
+      const Fx = q * (Ex + vy_ * Bz - vz_ * By);
+      const Fy = q * (Ey + vz_ * Bx - vx_ * Bz);
+      const Fz = q * (Ez + vx_ * By - vy_ * Bx);
 
-      // acceleration
       const ax = Fx / m;
       const ay = Fy / m;
       const az = Fz / m;
 
-      // update velocity
-      vx += ax * dt;
-      vy += ay * dt;
-      vz += az * dt;
+      vx_ += ax * dt;
+      vy_ += ay * dt;
+      vz_ += az * dt;
 
-      // update position
-      x += vx * dt;
-      y += vy * dt;
-      z += vz * dt;
+      x += vx_ * dt;
+      y += vy_ * dt;
+      z += vz_ * dt;
 
       points.push(new THREE.Vector3(x, y, z));
     }
@@ -297,12 +298,15 @@ Visualizations provide intuition about the dynamics under different configuratio
     renderer.render(scene, camera);
   }
 
-  initScene();
-  animate();
-  </script>
+  // === Başlatıcı ===
+  function startSimulations() {
+    const params = getParams();
+    run2DSimulation(params);
+    run3DSimulation(params);
+  }
 
-
-
+  init3D();
+</script>
 
 </body>
 </html>
