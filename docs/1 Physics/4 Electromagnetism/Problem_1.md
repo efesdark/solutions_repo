@@ -116,178 +116,196 @@ Visualizations provide intuition about the dynamics under different configuratio
 
 ---
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Lorentz Force Simulator</title>
-    <style>
-        .container { display: flex; }
-        .controls { padding: 20px; }
-        input[type="range"] { width: 200px; }
-        canvas { border: 1px solid #000; }
-    </style>
+  <meta charset="UTF-8">
+  <title>2D & 3D Lorentz Simülasyonu</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    .section {
+      border-bottom: 2px solid #ddd;
+      padding: 20px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .controls label {
+      min-width: 90px;
+    }
+
+    canvas {
+      border: 1px solid #ccc;
+      width: 100%;
+      height: 400px;
+      display: block;
+    }
+
+    #container3d {
+      width: 100%;
+      height: 500px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="controls">
-            <h3>Simulation Parameters</h3>
-            <label>Charge (q): <input type="range" id="charge" min="-5" max="5" step="0.1" value="1"></label>
-            <span id="chargeValue">1</span><br>
-            
-            <label>E-Field (E): <input type="range" id="E" min="0" max="10" step="0.1" value="0"></label>
-            <span id="EValue">0</span><br>
-            
-            <label>B-Field (B): <input type="range" id="B" min="0" max="5" step="0.1" value="1"></label>
-            <span id="BValue">1</span><br>
-            
-            <label>Mass (m): <input type="range" id="mass" min="1" max="10" step="0.1" value="1"></label>
-            <span id="massValue">1</span><br>
-            
-            <label>Initial Velocity (v₀): <input type="range" id="v0" min="0" max="10" step="0.1" value="2"></label>
-            <span id="v0Value">2</span><br>
-            
-            <button onclick="resetParticle()">Reset Particle</button>
-            <button onclick="toggleAnimation()">Start/Stop</button>
-        </div>
 
-        <div>
-            <h4>2D Visualization</h4>
-            <canvas id="canvas2D" width="600" height="400"></canvas>
-            <h4>3D Visualization</h4>
-            <div id="canvas3D" style="width: 600px; height: 400px;"></div>
-        </div>
-    </div>
+<!-- 2D Simülasyon Bölümü -->
+<div class="section">
+  <h2>2D Lorentz Kuvveti Simülasyonu</h2>
+  <div class="controls">
+    <label>Ex: <input type="number" id="Ex2D" value="0"></label>
+    <label>Ey: <input type="number" id="Ey2D" value="0"></label>
+    <label>Bz: <input type="number" id="Bz2D" value="1"></label>
+    <label>vx: <input type="number" id="vx2D" value="5"></label>
+    <label>vy: <input type="number" id="vy2D" value="0"></label>
+    <label>q: <input type="number" id="q2D" value="1"></label>
+    <label>m: <input type="number" id="m2D" value="1"></label>
+    <button onclick="run2DSimulation()">Simulate 2D</button>
+  </div>
+  <canvas id="canvas2d"></canvas>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        // 2D Canvas Setup
-        const canvas2D = document.getElementById('canvas2D');
-        const ctx = canvas2D.getContext('2d');
-        
-        // 3D Three.js Setup
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, 600/400, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(600, 400);
-        document.getElementById('canvas3D').appendChild(renderer.domElement);
-        
-        // Particle properties
-        let particle = {
-            position: new THREE.Vector3(0, 0, 0),
-            velocity: new THREE.Vector3(2, 0, 0),
-            acceleration: new THREE.Vector3(),
-            trail: []
-        };
+<!-- 3D Simülasyon Bölümü -->
+<div class="section">
+  <h2>3D Lorentz Kuvveti Simülasyonu</h2>
+  <div class="controls">
+    <label>Ex: <input type="number" id="Ex3D" value="0"></label>
+    <label>Ey: <input type="number" id="Ey3D" value="0"></label>
+    <label>Ez: <input type="number" id="Ez3D" value="0"></label>
+    <label>Bx: <input type="number" id="Bx3D" value="0"></label>
+    <label>By: <input type="number" id="By3D" value="0"></label>
+    <label>Bz: <input type="number" id="Bz3D" value="1"></label>
+    <label>vx: <input type="number" id="vx3D" value="5"></label>
+    <label>vy: <input type="number" id="vy3D" value="0"></label>
+    <label>vz: <input type="number" id="vz3D" value="0"></label>
+    <label>q: <input type="number" id="q3D" value="1"></label>
+    <label>m: <input type="number" id="m3D" value="1"></label>
+    <button onclick="run3DSimulation()">Simulate 3D</button>
+  </div>
+  <div id="container3d"></div>
+</div>
 
-        // Create 3D particle
-        const geometry = new THREE.SphereGeometry(0.2);
-        const material = new THREE.MeshBasicMaterial({color: 0xff0000});
-        const sphere = new THREE.Mesh(geometry, material);
-        scene.add(sphere);
-        camera.position.z = 5;
+<!-- Three.js Kütüphanesi -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
 
-        // Add coordinate axes
-        const axesHelper = new THREE.AxesHelper(5);
-        scene.add(axesHelper);
+<script>
+  // ==== 2D SIMÜLASYON ====
+  const canvas2d = document.getElementById("canvas2d");
+  const ctx2d = canvas2d.getContext("2d");
 
-        // Simulation parameters
-        let params = {
-            q: 1,
-            E: 0,
-            B: 1,
-            m: 1,
-            dt: 0.01,
-            running: false
-        };
+  function run2DSimulation() {
+    const Ex = parseFloat(document.getElementById("Ex2D").value);
+    const Ey = parseFloat(document.getElementById("Ey2D").value);
+    const Bz = parseFloat(document.getElementById("Bz2D").value);
+    const vx0 = parseFloat(document.getElementById("vx2D").value);
+    const vy0 = parseFloat(document.getElementById("vy2D").value);
+    const q = parseFloat(document.getElementById("q2D").value);
+    const m = parseFloat(document.getElementById("m2D").value);
 
-        // Input listeners
-        document.querySelectorAll('input[type="range"]').forEach(input => {
-            input.addEventListener('input', (e) => {
-                params[e.target.id] = parseFloat(e.target.value);
-                document.getElementById(e.target.id + 'Value').textContent = e.target.value;
-            });
-        });
+    canvas2d.width = canvas2d.clientWidth;
+    canvas2d.height = 400;
 
-        function calculateAcceleration() {
-            // Lorentz force: F = q(E + v × B)
-            const E = new THREE.Vector3(params.E, 0, 0);
-            const B = new THREE.Vector3(0, 0, params.B);
-            
-            const vCrossB = new THREE.Vector3().crossVectors(particle.velocity, B);
-            const acceleration = E.add(vCrossB).multiplyScalar(params.q / params.m);
-            
-            return acceleration;
-        }
+    ctx2d.clearRect(0, 0, canvas2d.width, canvas2d.height);
+    ctx2d.beginPath();
 
-        function updateParticle() {
-            const acceleration = calculateAcceleration();
-            particle.velocity.add(acceleration.multiplyScalar(params.dt));
-            particle.position.add(particle.velocity.clone().multiplyScalar(params.dt));
-            
-            // Keep track of trail (last 100 positions)
-            particle.trail.push(particle.position.clone());
-            if(particle.trail.length > 100) particle.trail.shift();
-        }
+    let x = 0, y = 0;
+    let vx = vx0, vy = vy0;
+    const dt = 0.02, steps = 2000, scale = 5;
 
-        function draw2D() {
-            ctx.clearRect(0, 0, canvas2D.width, canvas2D.height);
-            
-            // Draw axes
-            ctx.beginPath();
-            ctx.moveTo(300, 0);
-            ctx.lineTo(300, 400);
-            ctx.moveTo(0, 200);
-            ctx.lineTo(600, 200);
-            ctx.strokeStyle = '#aaa';
-            ctx.stroke();
-            
-            // Draw particle
-            ctx.beginPath();
-            ctx.arc(
-                300 + particle.position.x * 30,
-                200 - particle.position.y * 30,
-                5, 0, Math.PI * 2
-            );
-            ctx.fillStyle = '#f00';
-            ctx.fill();
-            
-            // Draw trail
-            ctx.beginPath();
-            particle.trail.forEach((pos, i) => {
-                ctx.lineTo(
-                    300 + pos.x * 30,
-                    200 - pos.y * 30
-                );
-            });
-            ctx.strokeStyle = 'rgba(255,0,0,0.3)';
-            ctx.stroke();
-        }
+    ctx2d.moveTo(canvas2d.width / 2, canvas2d.height / 2);
 
-        function animate() {
-            if(params.running) {
-                updateParticle();
-                draw2D();
-                
-                // Update 3D view
-                sphere.position.copy(particle.position);
-                camera.lookAt(particle.position);
-                renderer.render(scene, camera);
-            }
-            requestAnimationFrame(animate);
-        }
+    for (let i = 0; i < steps; i++) {
+      const Fx = q * (Ex + vy * Bz);
+      const Fy = q * (Ey - vx * Bz);
+      const ax = Fx / m, ay = Fy / m;
+      vx += ax * dt;
+      vy += ay * dt;
+      x += vx * dt;
+      y += vy * dt;
+      ctx2d.lineTo(canvas2d.width / 2 + x * scale, canvas2d.height / 2 - y * scale);
+    }
 
-        function resetParticle() {
-            particle.position.set(0, 0, 0);
-            particle.velocity.set(params.v0, 0, 0);
-            particle.trail = [];
-        }
+    ctx2d.strokeStyle = "blue";
+    ctx2d.stroke();
+  }
 
-        function toggleAnimation() {
-            params.running = !params.running;
-        }
+  // ==== 3D SIMÜLASYON ====
+  let scene, camera, renderer, controls, line;
+  const container3d = document.getElementById("container3d");
 
-        // Initialize animation
-        animate();
-    </script>
+  function init3D() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(75, container3d.clientWidth / container3d.clientHeight, 0.1, 1000);
+    camera.position.set(50, 50, 50);
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(container3d.clientWidth, container3d.clientHeight);
+    container3d.appendChild(renderer.domElement);
+
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    scene.add(new THREE.AxesHelper(20));
+
+    animate();
+  }
+
+  function run3DSimulation() {
+    if (line) scene.remove(line);
+
+    const Ex = parseFloat(document.getElementById("Ex3D").value);
+    const Ey = parseFloat(document.getElementById("Ey3D").value);
+    const Ez = parseFloat(document.getElementById("Ez3D").value);
+    const Bx = parseFloat(document.getElementById("Bx3D").value);
+    const By = parseFloat(document.getElementById("By3D").value);
+    const Bz = parseFloat(document.getElementById("Bz3D").value);
+    const vx0 = parseFloat(document.getElementById("vx3D").value);
+    const vy0 = parseFloat(document.getElementById("vy3D").value);
+    const vz0 = parseFloat(document.getElementById("vz3D").value);
+    const q = parseFloat(document.getElementById("q3D").value);
+    const m = parseFloat(document.getElementById("m3D").value);
+
+    let x = 0, y = 0, z = 0;
+    let vx = vx0, vy = vy0, vz = vz0;
+    const dt = 0.02, steps = 3000;
+    const points = [];
+
+    for (let i = 0; i < steps; i++) {
+      const Fx = q * (Ex + vy * Bz - vz * By);
+      const Fy = q * (Ey + vz * Bx - vx * Bz);
+      const Fz = q * (Ez + vx * By - vy * Bx);
+      const ax = Fx / m, ay = Fy / m, az = Fz / m;
+      vx += ax * dt;
+      vy += ay * dt;
+      vz += az * dt;
+      x += vx * dt;
+      y += vy * dt;
+      z += vz * dt;
+      points.push(new THREE.Vector3(x, y, z));
+    }
+
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    line = new THREE.Line(geometry, material);
+    scene.add(line);
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  init3D();
+</script>
+
 </body>
 </html>
 
