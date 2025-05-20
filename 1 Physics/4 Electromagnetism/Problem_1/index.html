@@ -84,12 +84,6 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#4-visualization">4. Visualization</a>
 </li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#2d-simulation">2D Simulation</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#3d-simulation">3D Simulation</a>
-<ul>
 <li class="toctree-l4"><a class="reference internal" href="#suggestions-for-extensions">Suggestions for Extensions</a>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#references">References</a>
@@ -300,62 +294,61 @@ r = \frac{mv_\perp}{|q|B}
 </ul>
 <p>Visualizations provide intuition about the dynamics under different configurations and help relate abstract concepts to practical applications.</p>
 <hr/>
-<h2 id="2d-simulation">2D Simulation</h2>
+<!-- ===================== 2D SIMULATION ===================== -->
+<h2>2D Lorentz Force Simulation</h2>
 <div>
-<label>Magnetic Field B (T): <input id="B2d" type="number" value="1"/></label>
-<label>Charge q (C): <input id="q2d" type="number" value="1"/></label>
-<label>Mass m (kg): <input id="m2d" type="number" value="1"/></label>
-<label>Initial Velocity vx (m/s): <input id="vx2d" type="number" value="1"/></label>
-<label>vy: <input id="vy2d" type="number" value="0"/></label>
+<label>Initial Velocity X: <input id="vx2d" type="number" value="1"/></label>
+<label>Y: <input id="vy2d" type="number" value="1"/></label>
 <button onclick="simulate2D()">Simulate 2D</button>
 </div>
-<canvas height="500" id="canvas2d" style="border:1px solid black;" width="500"></canvas>
+<canvas height="400" id="canvas2d" style="border:1px solid #000;" width="500"></canvas>
 <script>
 function simulate2D() {
   const canvas = document.getElementById("canvas2d");
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const B = parseFloat(document.getElementById("B2d").value);
-  const q = parseFloat(document.getElementById("q2d").value);
-  const m = parseFloat(document.getElementById("m2d").value);
-  const vx0 = parseFloat(document.getElementById("vx2d").value);
-  const vy0 = parseFloat(document.getElementById("vy2d").value);
-
-  let x = 250, y = 250;
-  let vx = vx0, vy = vy0;
+  const q = 1, m = 1, Bz = 1;
+  let vx = parseFloat(document.getElementById("vx2d").value);
+  let vy = parseFloat(document.getElementById("vy2d").value);
+  let x = canvas.width / 2;
+  let y = canvas.height / 2;
   const dt = 0.1;
+
   ctx.beginPath();
   ctx.moveTo(x, y);
 
-  for (let i = 0; i < 3000; i++) {
-    const ax = (q / m) * vy * B;
-    const ay = -(q / m) * vx * B;
-    vx += ax * dt;
-    vy += ay * dt;
-    x += vx * dt;
-    y += vy * dt;
+  for (let i = 0; i < 1000; i++) {
+    const Fx = q * vy * Bz;
+    const Fy = -q * vx * Bz;
+    vx += (Fx / m) * dt;
+    vy += (Fy / m) * dt;
+    x += vx;
+    y += vy;
     ctx.lineTo(x, y);
   }
+
   ctx.strokeStyle = "blue";
   ctx.stroke();
 }
 </script>
 <hr/>
-<h2 id="3d-simulation">3D Simulation</h2>
+<!-- ===================== 3D SIMULATION ===================== -->
+<h2>3D Lorentz Force Simulation</h2>
 <div>
 <label>Initial Velocity X: <input id="vx3d" type="number" value="1"/></label>
 <label>Y: <input id="vy3d" type="number" value="1"/></label>
 <label>Z: <input id="vz3d" type="number" value="1"/></label>
 <button onclick="init3D()">Simulate 3D</button>
 </div>
-<div id="canvas3d" style="width: 100%; height: 400px;"></div>
-<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
+<div id="canvas3d" style="width: 100%; height: 400px; border: 1px solid #000;"></div>
+<!-- Load Three.js and OrbitControls -->
+<script src="https://unpkg.com/three@0.157.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 function init3D() {
   const container = document.getElementById("canvas3d");
-  container.innerHTML = ""; // temizle
+  container.innerHTML = ""; // Clear previous render
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
@@ -364,8 +357,11 @@ function init3D() {
   container.appendChild(renderer.domElement);
 
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  camera.position.set(10, 10, 10);
+  controls.update();
 
-  const q = 1, m = 1, B = new THREE.Vector3(0, 0, 1);
+  const q = 1, m = 1;
+  const B = new THREE.Vector3(0, 0, 1);
   let v = new THREE.Vector3(
     parseFloat(document.getElementById("vx3d").value),
     parseFloat(document.getElementById("vy3d").value),
@@ -376,6 +372,7 @@ function init3D() {
 
   const geometry = new THREE.BufferGeometry();
   const positions = [];
+
   for (let i = 0; i < 1000; i++) {
     const F = new THREE.Vector3().crossVectors(v, B).multiplyScalar(q / m);
     v.add(F.clone().multiplyScalar(dt));
@@ -389,18 +386,17 @@ function init3D() {
   scene.add(line);
 
   scene.add(new THREE.AxesHelper(5));
-  camera.position.set(10, 10, 10);
-  controls.update();
 
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
   }
+
   animate();
 }
 </script>
-<hr/>
+<hr>
 <h3 id="suggestions-for-extensions">Suggestions for Extensions</h3>
 <ul>
 <li>Simulate <strong>non-uniform magnetic fields</strong> to model magnetic mirrors or advanced trap designs.</li>
@@ -414,7 +410,7 @@ function init3D() {
 <li>Jackson, J. D. <em>Classical Electrodynamics</em></li>
 <li>Numerical Recipes in Python: Runge-Kutta Methods</li>
 </ul>
-</div>
+</hr></div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
 <a class="btn btn-neutral float-left" href="../../3%20Waves/Problem_1/" title="Problem 1: Interference Patterns on a Water Surface"><span class="icon icon-circle-arrow-left"></span> Previous</a>
