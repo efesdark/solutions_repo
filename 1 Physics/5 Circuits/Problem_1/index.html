@@ -86,17 +86,11 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#motivation">Motivation</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#fundamental-concepts-and-formulas">Fundamental Concepts and Formulas</a>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#series-resistors">Series Resistors</a>
+<li class="toctree-l3"><a class="reference internal" href="#formulas">Formulas</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#parallel-resistors">Parallel Resistors</a>
+<li class="toctree-l3"><a class="reference internal" href="#recursive-calculation">Recursive Calculation</a>
 </li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#graph-theory-approach">Graph Theory Approach</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#interactive-circuit-simulator">Interactive Circuit Simulator</a>
+<li class="toctree-l3"><a class="reference internal" href="#interactive-circuit-simulator-nested-series-parallel">Interactive Circuit Simulator (Nested Series &amp; Parallel)</a>
 </li>
 </ul>
 </li>
@@ -196,258 +190,30 @@
 <h3 id="equivalent-resistance-using-graph-theory">Equivalent Resistance Using Graph Theory</h3>
 <hr/>
 <h2 id="motivation">Motivation</h2>
-<p>Calculating equivalent resistance is a fundamental problem in electrical circuits, essential for understanding and designing efficient systems. While traditional methods involve iteratively applying series and parallel resistor rules, these approaches become cumbersome for complex circuits. Graph theory offers a structured and algorithmic way to analyze circuits by representing them as graphs, where nodes correspond to junctions and edges represent resistors.</p>
-<p>This approach simplifies calculations and supports automation, making it highly valuable in circuit simulation and design.</p>
+<p>Calculating equivalent resistance is fundamental in circuit analysis. Complex circuits often combine series and parallel resistors in nested configurations. Representing circuits as hierarchical structures allows precise computation of equivalent resistance using recursive formulas.</p>
 <hr/>
-<h2 id="fundamental-concepts-and-formulas">Fundamental Concepts and Formulas</h2>
-<h3 id="series-resistors">Series Resistors</h3>
-<p>Resistors connected end-to-end, carrying the same current. Equivalent resistance:</p>
-<div class="arithmatex">\[
-R_{eq} = R_1 + R_2 + \cdots + R_n
-\]</div>
-<h3 id="parallel-resistors">Parallel Resistors</h3>
-<p>Resistors connected across the same two nodes, sharing voltage. Equivalent resistance:</p>
-<div class="arithmatex">\[
-\frac{1}{R_{eq}} = \frac{1}{R_1} + \frac{1}{R_2} + \cdots + \frac{1}{R_n}
-\]</div>
-<p>or equivalently:</p>
-<div class="arithmatex">\[
-R_{eq} = \left( \sum_{i=1}^n \frac{1}{R_i} \right)^{-1}
-\]</div>
-<hr/>
-<h2 id="graph-theory-approach">Graph Theory Approach</h2>
-<p>Representing circuits as graphs with nodes and weighted edges (resistors) allows systematic reduction:</p>
+<h2 id="formulas">Formulas</h2>
 <ul>
-<li><strong>Series reduction:</strong> Combine resistors in series by summing resistances.</li>
-<li><strong>Parallel reduction:</strong> Combine parallel resistors via reciprocal sum.</li>
+<li><strong>Series</strong>: <span class="arithmatex">\( R_{eq} = R_1 + R_2 + \cdots + R_n \)</span> </li>
+<li><strong>Parallel</strong>: <span class="arithmatex">\( \frac{1}{R_{eq}} = \frac{1}{R_1} + \frac{1}{R_2} + \cdots + \frac{1}{R_n} \)</span></li>
 </ul>
-<p>Iterate until a single equivalent resistance remains between the input and output nodes.</p>
 <hr/>
-<h2 id="interactive-circuit-simulator">Interactive Circuit Simulator</h2>
-<p>Add resistors in series or parallel, edit their values, and see the circuit visually and the equivalent resistance calculated in real-time.</p>
+<h2 id="recursive-calculation">Recursive Calculation</h2>
+<p>Each group is either:</p>
+<ul>
+<li>A single resistor (leaf), or</li>
+<li>A group of resistors connected in series or parallel.</li>
+</ul>
+<p>Equivalent resistance is computed recursively.</p>
 <hr/>
-<style>
-  body { font-family: Arial, sans-serif; max-width: 700px; margin: auto; padding: 20px;}
-  input[type="number"] { width: 80px; margin-right: 10px;}
-  button { margin: 5px 8px 5px 0; padding: 6px 12px; cursor: pointer; }
-  #resistor-list { margin-top: 15px; white-space: pre-wrap; font-family: monospace; }
-  #canvas-container { text-align: center; margin-top: 20px; }
-  #circuitCanvas { border: 1px solid #ccc; background: #f9f9f9; }
-  .resistor-label { font-weight: bold; font-size: 12px; }
-</style>
-<div>
-<label>Resistance (Ω): <input id="resistanceInput" min="0.01" step="0.01" type="number" value="10"/></label><br/>
-<button onclick="addSeries()">Add Resistor in Series</button>
-<button onclick="addParallel()">Add Resistor in Parallel</button>
-<button onclick="resetCircuit()">Reset Circuit</button>
-</div>
-<div id="resistor-list"></div>
-<div class="result" id="result" style="margin-top:20px; font-weight:bold; font-size:1.3em;">Equivalent Resistance: 0 Ω</div>
-<div id="canvas-container">
-<canvas height="180" id="circuitCanvas" width="680"></canvas>
-</div>
-<script>
-  // Global variables
-  let circuit = {
-    type: 'series', // 'series' or 'parallel'
-    resistors: []
-  };
-
-  // Resistor block size for drawing
-  const resistorWidth = 60;
-  const resistorHeight = 30;
-  const spacing = 20;
-
-  // Add resistor in series
-  function addSeries() {
-    const val = getResistanceInput();
-    if (val === null) return;
-    if (circuit.resistors.length === 0) {
-      circuit.type = 'series';
-    } else if (circuit.type !== 'series') {
-      alert('Cannot mix series and parallel at this level. Reset and try again.');
-      return;
-    }
-    circuit.resistors.push({ resistance: val });
-    updateCircuit();
-  }
-
-  // Add resistor in parallel
-  function addParallel() {
-    const val = getResistanceInput();
-    if (val === null) return;
-    if (circuit.resistors.length === 0) {
-      circuit.type = 'parallel';
-    } else if (circuit.type !== 'parallel') {
-      alert('Cannot mix parallel and series at this level. Reset and try again.');
-      return;
-    }
-    circuit.resistors.push({ resistance: val });
-    updateCircuit();
-  }
-
-  // Reset circuit
-  function resetCircuit() {
-    circuit = { type: 'series', resistors: [] };
-    updateCircuit();
-  }
-
-  // Get and validate input resistance
-  function getResistanceInput() {
-    const input = document.getElementById('resistanceInput');
-    const val = parseFloat(input.value);
-    if (isNaN(val) || val <= 0) {
-      alert('Please enter a positive resistance value.');
-      return null;
-    }
-    return val;
-  }
-
-  // Calculate equivalent resistance recursively
-  function calculateEquivalentResistance(circuit) {
-    if (!circuit.resistors || circuit.resistors.length === 0) return 0;
-
-    if (circuit.type === 'series') {
-      return circuit.resistors.reduce((sum, r) => sum + r.resistance, 0);
-    } else if (circuit.type === 'parallel') {
-      const invSum = circuit.resistors.reduce((sum, r) => sum + 1/r.resistance, 0);
-      return 1 / invSum;
-    }
-    return 0;
-  }
-
-  // Draw the circuit on canvas
-  function drawCircuit() {
-    const canvas = document.getElementById('circuitCanvas');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (circuit.resistors.length === 0) {
-      ctx.font = '16px Arial';
-      ctx.fillText('No resistors added yet.', 20, canvas.height / 2);
-      return;
-    }
-
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 2;
-    ctx.font = '14px Arial';
-
-    if (circuit.type === 'series') {
-      // Draw series resistors horizontally
-      let x = 20, y = canvas.height / 2;
-      // Draw start line
-      ctx.beginPath();
-      ctx.moveTo(x - 10, y);
-      ctx.lineTo(x, y);
-      ctx.stroke();
-
-      circuit.resistors.forEach((r, i) => {
-        // Draw resistor rectangle
-        ctx.strokeRect(x, y - resistorHeight/2, resistorWidth, resistorHeight);
-
-        // Draw resistor label
-        ctx.fillText(`R${i+1}: ${r.resistance.toFixed(2)} Ω`, x + 5, y + 5);
-
-        // Draw wires
-        ctx.beginPath();
-        ctx.moveTo(x + resistorWidth, y);
-        x += resistorWidth + spacing;
-        ctx.lineTo(x, y);
-        ctx.stroke();
-      });
-
-      // Draw end line
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x + 10, y);
-      ctx.stroke();
-
-    } else if (circuit.type === 'parallel') {
-      // Draw parallel resistors vertically stacked
-      let x = canvas.width / 2;
-      let startY = 20;
-      const totalHeight = circuit.resistors.length * (resistorHeight + spacing) - spacing;
-
-      // Draw vertical main lines
-      ctx.beginPath();
-      ctx.moveTo(x - 50, startY);
-      ctx.lineTo(x - 50, startY + totalHeight);
-      ctx.moveTo(x + 50, startY);
-      ctx.lineTo(x + 50, startY + totalHeight);
-      ctx.stroke();
-
-      circuit.resistors.forEach((r, i) => {
-        let y = startY + i * (resistorHeight + spacing);
-
-        // Draw horizontal connecting wires to resistor
-        ctx.beginPath();
-        ctx.moveTo(x - 50, y + resistorHeight/2);
-        ctx.lineTo(x - 10, y + resistorHeight/2);
-        ctx.moveTo(x + 10, y + resistorHeight/2);
-        ctx.lineTo(x + 50, y + resistorHeight/2);
-        ctx.stroke();
-
-        // Draw resistor rectangle
-        ctx.strokeRect(x - 10, y, resistorWidth, resistorHeight);
-
-        // Draw resistor label
-        ctx.fillText(`R${i+1}: ${r.resistance.toFixed(2)} Ω`, x - 5, y + resistorHeight/1.7);
-      });
-    }
-  }
-
-  // Update circuit UI and results
-  function updateCircuit() {
-    drawCircuit();
-
-    const Req = calculateEquivalentResistance(circuit);
-    document.getElementById('result').innerText = `Equivalent Resistance: ${Req.toFixed(3)} Ω`;
-
-    let listText = `Circuit type: ${circuit.type.toUpperCase()}\nResistors:\n`;
-    circuit.resistors.forEach((r, i) => {
-      listText += `  R${i+1}: ${r.resistance.toFixed(3)} Ω\n`;
-    });
-    document.getElementById('resistor-list').innerText = listText;
-  }
-
-  // Initialize
-  resetCircuit();
-</script>
-</div>
-</div><footer>
-<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
-<a class="btn btn-neutral float-left" href="../../4%20Electromagnetism/Problem_1/" title="Simulating the Effects of the Lorentz Force"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-<a class="btn btn-neutral float-right" href="../../6%20Statistics/Problem_1/" title="Problem 1">Next <span class="icon icon-circle-arrow-right"></span></a>
-</div>
+<h2 id="interactive-circuit-simulator-nested-series-parallel">Interactive Circuit Simulator (Nested Series &amp; Parallel)</h2>
+<p>You can:</p>
+<ul>
+<li>Add resistors in <strong>series</strong> or <strong>parallel</strong> to the current selected group,</li>
+<li>Navigate into groups to add nested connections,</li>
+<li>Edit resistor values,</li>
+<li>See the circuit visually on canvas,</li>
+<li>See equivalent resistance updated live.</li>
+</ul>
 <hr/>
-<div role="contentinfo">
-<!-- Copyright etc -->
-</div>
-
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-</footer>
-</div>
-</div>
-</section>
-</div>
-<div aria-label="Versions" class="rst-versions" role="note">
-<span class="rst-current-version" data-toggle="rst-current-version">
-<span><a href="../../4%20Electromagnetism/Problem_1/" style="color: #fcfcfc">« Previous</a></span>
-<span><a href="../../6%20Statistics/Problem_1/" style="color: #fcfcfc">Next »</a></span>
-</span>
-</div>
-<script src="../../../js/jquery-3.6.0.min.js"></script>
-<script>var base_url = "../../..";</script>
-<script src="../../../js/theme_extra.js"></script>
-<script src="../../../js/theme.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-<script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
-<script src="../../../search/main.js"></script>
-<script>
-        jQuery(function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        });
-    </script>
-</body>
-</html>
+<style></style></div></div></div></div></section></div></body></html>
