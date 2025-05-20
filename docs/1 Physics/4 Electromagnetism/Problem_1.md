@@ -116,64 +116,180 @@ Visualizations provide intuition about the dynamics under different configuratio
 
 ---
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>2D & 3D Lorentz Simülasyonu</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-    }
-
-    .section {
-      border-bottom: 2px solid #ddd;
-      padding: 20px;
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .controls label {
-      min-width: 90px;
-    }
-
-    canvas {
-      border: 1px solid #ccc;
-      width: 100%;
-      height: 400px;
-      display: block;
-    }
-
-    #container3d {
-      width: 100%;
-      height: 500px;
-    }
-  </style>
+    <title>Lorentz Force Simulator</title>
+    <style>
+        .container { display: flex; }
+        .controls { padding: 20px; }
+        input[type="range"] { width: 200px; }
+        canvas { border: 1px solid #000; }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <div class="controls">
+            <h3>Simulation Parameters</h3>
+            <label>Charge (q): <input type="range" id="charge" min="-5" max="5" step="0.1" value="1"></label>
+            <span id="chargeValue">1</span><br>
+            
+            <label>E-Field (E): <input type="range" id="E" min="0" max="10" step="0.1" value="0"></label>
+            <span id="EValue">0</span><br>
+            
+            <label>B-Field (B): <input type="range" id="B" min="0" max="5" step="0.1" value="1"></label>
+            <span id="BValue">1</span><br>
+            
+            <label>Mass (m): <input type="range" id="mass" min="1" max="10" step="0.1" value="1"></label>
+            <span id="massValue">1</span><br>
+            
+            <label>Initial Velocity (v₀): <input type="range" id="v0" min="0" max="10" step="0.1" value="2"></label>
+            <span id="v0Value">2</span><br>
+            
+            <button onclick="resetParticle()">Reset Particle</button>
+            <button onclick="toggleAnimation()">Start/Stop</button>
+        </div>
 
-<!-- 2D Simülasyon Bölümü -->
-<div class="section">
-  <h2>2D Lorentz Kuvveti Simülasyonu</h2>
-  <div class="controls">
-    <label>Ex: <input type="number" id="Ex2D" value="0"></label>
-    <label>Ey: <input type="number" id="Ey2D" value="0"></label>
-    <label>Bz: <input type="number" id="Bz2D" value="1"></label>
-    <label>vx: <input type="number" id="vx2D" value="5"></label>
-    <label>vy: <input type="number" id="vy2D" value="0"></label>
-    <label>q: <input type="number" id="q2D" value="1"></label>
-    <label>m: <input type="number" id="m2D" value="1"></label>
-    <button onclick="run2DSimulation()">Simulate 2D</button>
-  </div>
-  <canvas id="canvas2d"></canvas>
-</div>
+        <div>
+            <h4>2D Visualization</h4>
+            <canvas id="canvas2D" width="600" height="400"></canvas>
+            <h4>3D Visualization</h4>
+            <div id="canvas3D" style="width: 600px; height: 400px;"></div>
+        </div>
+    </div>
 
-<!-- 3D Simülasyon Bölümü -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // 2D Canvas Setup
+        const canvas2D = document.getElementById('canvas2D');
+        const ctx = canvas2D.getContext('2d');
+        
+        // 3D Three.js Setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, 600/400, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(600, 400);
+        document.getElementById('canvas3D').appendChild(renderer.domElement);
+        
+        // Particle properties
+        let particle = {
+            position: new THREE.Vector3(0, 0, 0),
+            velocity: new THREE.Vector3(2, 0, 0),
+            acceleration: new THREE.Vector3(),
+            trail: []
+        };
+
+        // Create 3D particle
+        const geometry = new THREE.SphereGeometry(0.2);
+        const material = new THREE.MeshBasicMaterial({color: 0xff0000});
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+        camera.position.z = 5;
+
+        // Add coordinate axes
+        const axesHelper = new THREE.AxesHelper(5);
+        scene.add(axesHelper);
+
+        // Simulation parameters
+        let params = {
+            q: 1,
+            E: 0,
+            B: 1,
+            m: 1,
+            dt: 0.01,
+            running: false
+        };
+
+        // Input listeners
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            input.addEventListener('input', (e) => {
+                params[e.target.id] = parseFloat(e.target.value);
+                document.getElementById(e.target.id + 'Value').textContent = e.target.value;
+            });
+        });
+
+        function calculateAcceleration() {
+            // Lorentz force: F = q(E + v × B)
+            const E = new THREE.Vector3(params.E, 0, 0);
+            const B = new THREE.Vector3(0, 0, params.B);
+            
+            const vCrossB = new THREE.Vector3().crossVectors(particle.velocity, B);
+            const acceleration = E.add(vCrossB).multiplyScalar(params.q / params.m);
+            
+            return acceleration;
+        }
+
+        function updateParticle() {
+            const acceleration = calculateAcceleration();
+            particle.velocity.add(acceleration.multiplyScalar(params.dt));
+            particle.position.add(particle.velocity.clone().multiplyScalar(params.dt));
+            
+            // Keep track of trail (last 100 positions)
+            particle.trail.push(particle.position.clone());
+            if(particle.trail.length > 100) particle.trail.shift();
+        }
+
+        function draw2D() {
+            ctx.clearRect(0, 0, canvas2D.width, canvas2D.height);
+            
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(300, 0);
+            ctx.lineTo(300, 400);
+            ctx.moveTo(0, 200);
+            ctx.lineTo(600, 200);
+            ctx.strokeStyle = '#aaa';
+            ctx.stroke();
+            
+            // Draw particle
+            ctx.beginPath();
+            ctx.arc(
+                300 + particle.position.x * 30,
+                200 - particle.position.y * 30,
+                5, 0, Math.PI * 2
+            );
+            ctx.fillStyle = '#f00';
+            ctx.fill();
+            
+            // Draw trail
+            ctx.beginPath();
+            particle.trail.forEach((pos, i) => {
+                ctx.lineTo(
+                    300 + pos.x * 30,
+                    200 - pos.y * 30
+                );
+            });
+            ctx.strokeStyle = 'rgba(255,0,0,0.3)';
+            ctx.stroke();
+        }
+
+        function animate() {
+            if(params.running) {
+                updateParticle();
+                draw2D();
+                
+                // Update 3D view
+                sphere.position.copy(particle.position);
+                camera.lookAt(particle.position);
+                renderer.render(scene, camera);
+            }
+            requestAnimationFrame(animate);
+        }
+
+        function resetParticle() {
+            particle.position.set(0, 0, 0);
+            particle.velocity.set(params.v0, 0, 0);
+            particle.trail = [];
+        }
+
+        function toggleAnimation() {
+            params.running = !params.running;
+        }
+
+        // Initialize animation
+        animate();
+    </script>
+</body>
+</html>
 
 
 
