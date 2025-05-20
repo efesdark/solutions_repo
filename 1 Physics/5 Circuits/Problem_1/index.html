@@ -227,75 +227,36 @@ R_{eq} = \left( \sum_{i=1}^n \frac{1}{R_i} \right)^{-1}
 <p>Add resistors in series or parallel, edit their values, and see the circuit visually and the equivalent resistance calculated in real-time.</p>
 <hr/>
 <style>
-  -
   input[type="number"] { width: 80px; margin-right: 10px;}
   button { margin: 5px 8px 5px 0; padding: 6px 12px; cursor: pointer; }
   #resistor-list { margin-top: 15px; white-space: pre-wrap; font-family: monospace; }
   #canvas-container { text-align: center; margin-top: 20px; }
   #circuitCanvas { border: 1px solid #ccc; background: #f9f9f9; }
-  .resistor-label { font-weight: bold; font-size: 12px; }
 </style>
 <div>
 <label>Resistance (Ω): <input id="resistanceInput" min="0.01" step="0.01" type="number" value="10"/></label><br/>
-<button onclick="addSeries()">Add Resistor in Series</button>
-<button onclick="addParallel()">Add Resistor in Parallel</button>
+<button onclick="addResistor()">Add Resistor</button>
+<button onclick="startSeries()">Start Series</button>
+<button onclick="startParallel()">Start Parallel</button>
+<button onclick="endGroup()">End Group</button>
 <button onclick="resetCircuit()">Reset Circuit</button>
 </div>
 <div id="resistor-list"></div>
 <div class="result" id="result" style="margin-top:20px; font-weight:bold; font-size:1.3em;">Equivalent Resistance: 0 Ω</div>
 <div id="canvas-container">
-<canvas height="180" id="circuitCanvas" width="680"></canvas>
+<canvas height="250" id="circuitCanvas" width="680"></canvas>
 </div>
 <script>
-  // Global variables
-  let circuit = {
-    type: 'series', // 'series' or 'parallel'
-    resistors: []
-  };
+  // Circuit node tipi:
+  // { type: 'series' | 'parallel', children: [node, node, ...] } veya
+  // { type: 'resistor', resistance: number }
 
-  // Resistor block size for drawing
-  const resistorWidth = 60;
-  const resistorHeight = 30;
-  const spacing = 20;
+  let rootCircuit = { type: 'series', children: [] }; // Başlangıçta boş seri
+  let stack = [rootCircuit]; // İç içe gruplar için yığın (stack)
 
-  // Add resistor in series
-  function addSeries() {
-    const val = getResistanceInput();
-    if (val === null) return;
-    if (circuit.resistors.length === 0) {
-      circuit.type = 'series';
-    } else if (circuit.type !== 'series') {
-      alert('Cannot mix series and parallel at this level. Reset and try again.');
-      return;
-    }
-    circuit.resistors.push({ resistance: val });
-    updateCircuit();
-  }
-
-  // Add resistor in parallel
-  function addParallel() {
-    const val = getResistanceInput();
-    if (val === null) return;
-    if (circuit.resistors.length === 0) {
-      circuit.type = 'parallel';
-    } else if (circuit.type !== 'parallel') {
-      alert('Cannot mix parallel and series at this level. Reset and try again.');
-      return;
-    }
-    circuit.resistors.push({ resistance: val });
-    updateCircuit();
-  }
-
-  // Reset circuit
-  function resetCircuit() {
-    circuit = { type: 'series', resistors: [] };
-    updateCircuit();
-  }
-
-  // Get and validate input resistance
+  // Ekleme fonksiyonları
   function getResistanceInput() {
-    const input = document.getElementById('resistanceInput');
-    const val = parseFloat(input.value);
+    const val = parseFloat(document.getElementById('resistanceInput').value);
     if (isNaN(val) || val <= 0) {
       alert('Please enter a positive resistance value.');
       return null;
@@ -303,114 +264,161 @@ R_{eq} = \left( \sum_{i=1}^n \frac{1}{R_i} \right)^{-1}
     return val;
   }
 
-  // Calculate equivalent resistance recursively
-  function calculateEquivalentResistance(circuit) {
-    if (!circuit.resistors || circuit.resistors.length === 0) return 0;
+  // Direnç ekle, en üstteki grup içine
+  function addResistor() {
+    const val = getResistanceInput();
+    if (val === null) return;
+    const currentGroup = stack[stack.length - 1];
+    currentGroup.children.push({ type: 'resistor', resistance: val });
+    updateCircuit();
+  }
 
-    if (circuit.type === 'series') {
-      return circuit.resistors.reduce((sum, r) => sum + r.resistance, 0);
-    } else if (circuit.type === 'parallel') {
-      const invSum = circuit.resistors.reduce((sum, r) => sum + 1/r.resistance, 0);
-      return 1 / invSum;
+  // Yeni seri grup başlat
+  function startSeries() {
+    const newGroup = { type: 'series', children: [] };
+    const currentGroup = stack[stack.length - 1];
+    currentGroup.children.push(newGroup);
+    stack.push(newGroup);
+    updateCircuit();
+  }
+
+  // Yeni paralel grup başlat
+  function startParallel() {
+    const newGroup = { type: 'parallel', children: [] };
+    const currentGroup = stack[stack.length - 1];
+    currentGroup.children.push(newGroup);
+    stack.push(newGroup);
+    updateCircuit();
+  }
+
+  // Mevcut grup kapat
+  function endGroup() {
+    if (stack.length <= 1) {
+      alert("No open group to end.");
+      return;
+    }
+    stack.pop();
+    updateCircuit();
+  }
+
+  // Reset
+  function resetCircuit() {
+    rootCircuit = { type: 'series', children: [] };
+    stack = [rootCircuit];
+    updateCircuit();
+  }
+
+  // Eşdeğer direnç hesaplama (recursive)
+  function calculateEquivalentResistance(node) {
+    if (node.type === 'resistor') {
+      return node.resistance;
+    }
+    if (node.type === 'series') {
+      return node.children.reduce((sum, child) => sum + calculateEquivalentResistance(child), 0);
+    }
+    if (node.type === 'parallel') {
+      let invSum = 0;
+      for (const child of node.children) {
+        let r = calculateEquivalentResistance(child);
+        if (r === 0) return 0; // Sonsuz veya hata yok
+        invSum += 1 / r;
+      }
+      return invSum === 0 ? 0 : 1 / invSum;
     }
     return 0;
   }
 
-  // Draw the circuit on canvas
+  // Metinsel gösterim (recursive)
+  function renderCircuit(node, indent = '') {
+    if (node.type === 'resistor') {
+      return indent + `Resistor: ${node.resistance.toFixed(2)} Ω\n`;
+    }
+    let str = indent + (node.type === 'series' ? 'Series {\n' : 'Parallel {\n');
+    node.children.forEach(child => {
+      str += renderCircuit(child, indent + '  ');
+    });
+    str += indent + '}\n';
+    return str;
+  }
+
+  // Basit çizim için (yalnızca seri ve paralel blokları yatay / dikey çizimle gösterir)
   function drawCircuit() {
     const canvas = document.getElementById('circuitCanvas');
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (circuit.resistors.length === 0) {
-      ctx.font = '16px Arial';
-      ctx.fillText('No resistors added yet.', 20, canvas.height / 2);
-      return;
+    const startX = 20;
+    const startY = canvas.height / 2;
+    const resistorW = 60;
+    const resistorH = 30;
+    const spacing = 20;
+
+    // Recursive çizim fonksiyonu
+    function drawNode(node, x, y) {
+      if (node.type === 'resistor') {
+        ctx.strokeRect(x, y - resistorH / 2, resistorW, resistorH);
+        ctx.fillText(`${node.resistance.toFixed(2)}Ω`, x + 5, y + 5);
+        return { width: resistorW + spacing, height: resistorH };
+      }
+      if (node.type === 'series') {
+        // Yatay yan yana
+        let curX = x;
+        let maxHeight = 0;
+        node.children.forEach(child => {
+          const size = drawNode(child, curX, y);
+          curX += size.width;
+          if (size.height > maxHeight) maxHeight = size.height;
+        });
+        // Baş ve son hatlar
+        ctx.beginPath();
+        ctx.moveTo(x - spacing/2, y);
+        ctx.lineTo(curX - spacing, y);
+        ctx.stroke();
+        return { width: curX - x, height: maxHeight };
+      }
+      if (node.type === 'parallel') {
+        // Dikey üst üste, yatay hatlar sağdan soldan bağlar
+        let curY = y - (node.children.length - 1) * (resistorH + spacing) / 2;
+        let maxWidth = 0;
+        node.children.forEach(child => {
+          const size = drawNode(child, x + spacing + resistorW, curY);
+          // Sol ve sağ yatay hatlar
+          ctx.beginPath();
+          ctx.moveTo(x, curY);
+          ctx.lineTo(x + spacing, curY);
+          ctx.moveTo(x + spacing + resistorW + size.width - resistorW, curY);
+          ctx.lineTo(x + spacing + resistorW + size.width, curY);
+          ctx.stroke();
+          curY += resistorH + spacing;
+          if (size.width > maxWidth) maxWidth = size.width;
+        });
+        // Sol ve sağ ana dikey hatlar
+        ctx.beginPath();
+        ctx.moveTo(x, y - (node.children.length -1)*(resistorH+spacing)/2 - spacing/2);
+        ctx.lineTo(x, y + (node.children.length -1)*(resistorH+spacing)/2 + spacing/2);
+        ctx.moveTo(x + spacing + resistorW + maxWidth, y - (node.children.length -1)*(resistorH+spacing)/2 - spacing/2);
+        ctx.lineTo(x + spacing + resistorW + maxWidth, y + (node.children.length -1)*(resistorH+spacing)/2 + spacing/2);
+        ctx.stroke();
+
+        return { width: spacing + resistorW + maxWidth, height: (resistorH + spacing) * node.children.length };
+      }
     }
 
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 2;
     ctx.font = '14px Arial';
-
-    if (circuit.type === 'series') {
-      // Draw series resistors horizontally
-      let x = 20, y = canvas.height / 2;
-      // Draw start line
-      ctx.beginPath();
-      ctx.moveTo(x - 10, y);
-      ctx.lineTo(x, y);
-      ctx.stroke();
-
-      circuit.resistors.forEach((r, i) => {
-        // Draw resistor rectangle
-        ctx.strokeRect(x, y - resistorHeight/2, resistorWidth, resistorHeight);
-
-        // Draw resistor label
-        ctx.fillText(`R${i+1}: ${r.resistance.toFixed(2)} Ω`, x + 5, y + 5);
-
-        // Draw wires
-        ctx.beginPath();
-        ctx.moveTo(x + resistorWidth, y);
-        x += resistorWidth + spacing;
-        ctx.lineTo(x, y);
-        ctx.stroke();
-      });
-
-      // Draw end line
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x + 10, y);
-      ctx.stroke();
-
-    } else if (circuit.type === 'parallel') {
-      // Draw parallel resistors vertically stacked
-      let x = canvas.width / 2;
-      let startY = 20;
-      const totalHeight = circuit.resistors.length * (resistorHeight + spacing) - spacing;
-
-      // Draw vertical main lines
-      ctx.beginPath();
-      ctx.moveTo(x - 50, startY);
-      ctx.lineTo(x - 50, startY + totalHeight);
-      ctx.moveTo(x + 50, startY);
-      ctx.lineTo(x + 50, startY + totalHeight);
-      ctx.stroke();
-
-      circuit.resistors.forEach((r, i) => {
-        let y = startY + i * (resistorHeight + spacing);
-
-        // Draw horizontal connecting wires to resistor
-        ctx.beginPath();
-        ctx.moveTo(x - 50, y + resistorHeight/2);
-        ctx.lineTo(x - 10, y + resistorHeight/2);
-        ctx.moveTo(x + 10, y + resistorHeight/2);
-        ctx.lineTo(x + 50, y + resistorHeight/2);
-        ctx.stroke();
-
-        // Draw resistor rectangle
-        ctx.strokeRect(x - 10, y, resistorWidth, resistorHeight);
-
-        // Draw resistor label
-        ctx.fillText(`R${i+1}: ${r.resistance.toFixed(2)} Ω`, x - 5, y + resistorHeight/1.7);
-      });
-    }
+    drawNode(rootCircuit, startX, startY);
   }
 
-  // Update circuit UI and results
+  // Güncelleme fonksiyonu
   function updateCircuit() {
+    const eq = calculateEquivalentResistance(rootCircuit);
+    document.getElementById('result').innerText = `Equivalent Resistance: ${eq.toFixed(3)} Ω`;
+
+    document.getElementById('resistor-list').innerText = renderCircuit(rootCircuit);
     drawCircuit();
-
-    const Req = calculateEquivalentResistance(circuit);
-    document.getElementById('result').innerText = `Equivalent Resistance: ${Req.toFixed(3)} Ω`;
-
-    let listText = `Circuit type: ${circuit.type.toUpperCase()}\nResistors:\n`;
-    circuit.resistors.forEach((r, i) => {
-      listText += `  R${i+1}: ${r.resistance.toFixed(3)} Ω\n`;
-    });
-    document.getElementById('resistor-list').innerText = listText;
   }
 
-  // Initialize
   resetCircuit();
 </script>
 </div>
