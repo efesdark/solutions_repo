@@ -115,242 +115,116 @@ We aim to produce labeled and annotated plots showing:
 Visualizations provide intuition about the dynamics under different configurations and help relate abstract concepts to practical applications.
 
 ---
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>2D & 3D Lorentz Simülasyonu</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-    }
+## 2D Simulation
 
-    .section {
-      border-bottom: 2px solid #ddd;
-      padding: 20px;
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .controls label {
-      min-width: 90px;
-    }
-
-    canvas {
-      border: 1px solid #ccc;
-      width: 100%;
-      height: 400px;
-      display: block;
-    }
-
-    #container3d {
-      width: 100%;
-      height: 500px;
-    }
-  </style>
-</head>
-<body>
-
-<!-- 2D Simülasyon Bölümü -->
-<div class="section">
-  <h2>2D Lorentz Kuvveti Simülasyonu</h2>
-  <div class="controls">
-    <label>Ex: <input type="number" id="Ex2D" value="0"></label>
-    <label>Ey: <input type="number" id="Ey2D" value="0"></label>
-    <label>Bz: <input type="number" id="Bz2D" value="1"></label>
-    <label>vx: <input type="number" id="vx2D" value="5"></label>
-    <label>vy: <input type="number" id="vy2D" value="0"></label>
-    <label>q: <input type="number" id="q2D" value="1"></label>
-    <label>m: <input type="number" id="m2D" value="1"></label>
-    <button onclick="run2DSimulation()">Simulate 2D</button>
-  </div>
-  <canvas id="canvas2d"></canvas>
+<div>
+  <label>Magnetic Field B (T): <input type="number" id="B2d" value="1"></label>
+  <label>Charge q (C): <input type="number" id="q2d" value="1"></label>
+  <label>Mass m (kg): <input type="number" id="m2d" value="1"></label>
+  <label>Initial Velocity vx (m/s): <input type="number" id="vx2d" value="1"></label>
+  <label>vy: <input type="number" id="vy2d" value="0"></label>
+  <button onclick="simulate2D()">Simulate 2D</button>
 </div>
 
-<!-- 3D Simülasyon Bölümü -->
-<div class="section">
-  <h2>3D Lorentz Kuvveti Simülasyonu</h2>
-  <div class="controls">
-    <label>Ex: <input type="number" id="Ex3D" value="0"></label>
-    <label>Ey: <input type="number" id="Ey3D" value="0"></label>
-    <label>Ez: <input type="number" id="Ez3D" value="0"></label>
-    <label>Bx: <input type="number" id="Bx3D" value="0"></label>
-    <label>By: <input type="number" id="By3D" value="0"></label>
-    <label>Bz: <input type="number" id="Bz3D" value="1"></label>
-    <label>vx: <input type="number" id="vx3D" value="5"></label>
-    <label>vy: <input type="number" id="vy3D" value="0"></label>
-    <label>vz: <input type="number" id="vz3D" value="0"></label>
-    <label>q: <input type="number" id="q3D" value="1"></label>
-    <label>m: <input type="number" id="m3D" value="1"></label>
-    <button onclick="run3DSimulation()">Simulate 3D</button>
-  </div>
-  <div id="container3d"></div>
+<canvas id="canvas2d" width="500" height="500" style="border:1px solid black;"></canvas>
+
+<script>
+function simulate2D() {
+  const canvas = document.getElementById("canvas2d");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const B = parseFloat(document.getElementById("B2d").value);
+  const q = parseFloat(document.getElementById("q2d").value);
+  const m = parseFloat(document.getElementById("m2d").value);
+  const vx0 = parseFloat(document.getElementById("vx2d").value);
+  const vy0 = parseFloat(document.getElementById("vy2d").value);
+
+  let x = 250, y = 250;
+  let vx = vx0, vy = vy0;
+  const dt = 0.1;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+
+  for (let i = 0; i < 3000; i++) {
+    const ax = (q / m) * vy * B;
+    const ay = -(q / m) * vx * B;
+    vx += ax * dt;
+    vy += ay * dt;
+    x += vx * dt;
+    y += vy * dt;
+    ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = "blue";
+  ctx.stroke();
+}
+</script>
+
+---
+
+## 3D Simulation
+
+<div>
+  <label>Initial Velocity X: <input type="number" id="vx3d" value="1"></label>
+  <label>Y: <input type="number" id="vy3d" value="1"></label>
+  <label>Z: <input type="number" id="vz3d" value="1"></label>
+  <button onclick="init3D()">Simulate 3D</button>
 </div>
 
-<!-- Three.js Kütüphanesi -->
+<div id="canvas3d" style="width: 100%; height: 400px;"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
 
 <script>
-  // ==== 2D SIMÜLASYON ====
-  const canvas2d = document.getElementById("canvas2d");
-  const ctx2d = canvas2d.getContext("2d");
+function init3D() {
+  const container = document.getElementById("canvas3d");
+  container.innerHTML = ""; // temizle
 
-  function run2DSimulation() {
-    const Ex = parseFloat(document.getElementById("Ex2D").value);
-    const Ey = parseFloat(document.getElementById("Ey2D").value);
-    const Bz = parseFloat(document.getElementById("Bz2D").value);
-    const vx0 = parseFloat(document.getElementById("vx2D").value);
-    const vy0 = parseFloat(document.getElementById("vy2D").value);
-    const q = parseFloat(document.getElementById("q2D").value);
-    const m = parseFloat(document.getElementById("m2D").value);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
 
-    canvas2d.width = canvas2d.clientWidth;
-    canvas2d.height = 400;
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-    ctx2d.clearRect(0, 0, canvas2d.width, canvas2d.height);
-    ctx2d.beginPath();
+  const q = 1, m = 1, B = new THREE.Vector3(0, 0, 1);
+  let v = new THREE.Vector3(
+    parseFloat(document.getElementById("vx3d").value),
+    parseFloat(document.getElementById("vy3d").value),
+    parseFloat(document.getElementById("vz3d").value)
+  );
+  let pos = new THREE.Vector3(0, 0, 0);
+  const dt = 0.05;
 
-    let x = 0, y = 0;
-    let vx = vx0, vy = vy0;
-    const dt = 0.02, steps = 2000, scale = 5;
-
-    ctx2d.moveTo(canvas2d.width / 2, canvas2d.height / 2);
-
-    for (let i = 0; i < steps; i++) {
-      const Fx = q * (Ex + vy * Bz);
-      const Fy = q * (Ey - vx * Bz);
-      const ax = Fx / m, ay = Fy / m;
-      vx += ax * dt;
-      vy += ay * dt;
-      x += vx * dt;
-      y += vy * dt;
-      ctx2d.lineTo(canvas2d.width / 2 + x * scale, canvas2d.height / 2 - y * scale);
-    }
-
-    ctx2d.strokeStyle = "blue";
-    ctx2d.stroke();
+  const geometry = new THREE.BufferGeometry();
+  const positions = [];
+  for (let i = 0; i < 1000; i++) {
+    const F = new THREE.Vector3().crossVectors(v, B).multiplyScalar(q / m);
+    v.add(F.clone().multiplyScalar(dt));
+    pos.add(v.clone().multiplyScalar(dt));
+    positions.push(pos.x, pos.y, pos.z);
   }
 
-  // ==== 3D SIMÜLASYON ====
-  let scene, camera, renderer, controls, line;
-  const container3d = document.getElementById("container3d");
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+  const line = new THREE.Line(geometry, material);
+  scene.add(line);
 
-  function init3D() {
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, container3d.clientWidth / container3d.clientHeight, 0.1, 1000);
-    camera.position.set(50, 50, 50);
-
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize(container3d.clientWidth, container3d.clientHeight);
-    container3d.appendChild(renderer.domElement);
-
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
-    scene.add(new THREE.AxesHelper(20));
-
-    animate();
-  }
-
-  function run3DSimulation() {
-    if (line) scene.remove(line);
-
-    const Ex = parseFloat(document.getElementById("Ex3D").value);
-    const Ey = parseFloat(document.getElementById("Ey3D").value);
-    const Ez = parseFloat(document.getElementById("Ez3D").value);
-    const Bx = parseFloat(document.getElementById("Bx3D").value);
-    const By = parseFloat(document.getElementById("By3D").value);
-    const Bz = parseFloat(document.getElementById("Bz3D").value);
-    const vx0 = parseFloat(document.getElementById("vx3D").value);
-    const vy0 = parseFloat(document.getElementById("vy3D").value);
-    const vz0 = parseFloat(document.getElementById("vz3D").value);
-    const q = parseFloat(document.getElementById("q3D").value);
-    const m = parseFloat(document.getElementById("m3D").value);
-
-    let x = 0, y = 0, z = 0;
-    let vx = vx0, vy = vy0, vz = vz0;
-    const dt = 0.02, steps = 3000;
-    const points = [];
-
-    for (let i = 0; i < steps; i++) {
-      const Fx = q * (Ex + vy * Bz - vz * By);
-      const Fy = q * (Ey + vz * Bx - vx * Bz);
-      const Fz = q * (Ez + vx * By - vy * Bx);
-      const ax = Fx / m, ay = Fy / m, az = Fz / m;
-      vx += ax * dt;
-      vy += ay * dt;
-      vz += az * dt;
-      x += vx * dt;
-      y += vy * dt;
-      z += vz * dt;
-      points.push(new THREE.Vector3(x, y, z));
-    }
-
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
-    line = new THREE.Line(geometry, material);
-    scene.add(line);
-  }
+  scene.add(new THREE.AxesHelper(5));
+  camera.position.set(10, 10, 10);
+  controls.update();
 
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
   }
-
-  init3D();
+  animate();
+}
 </script>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>3D Test</title>
-  <style>
-    body { margin: 0; }
-    #container3d { width: 100%; height: 100vh; }
-  </style>
-</head>
-<body>
-  <div id="container3d"></div>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
-  <script>
-    const container = document.getElementById('container3d');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.set(30, 30, 30);
-
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    container.appendChild(renderer.domElement);
-
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    scene.add(new THREE.AxesHelper(20));
-
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    }
-    animate();
-  </script>
-</body>
-</html>
-
-
-</body>
-</html>
 
 
 
