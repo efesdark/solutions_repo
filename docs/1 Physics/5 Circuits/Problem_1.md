@@ -1,79 +1,185 @@
-# Circuits
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Physics Lab Report</title>
+    <style>
+        :root {
+            --primary: #2980b9;
+            --secondary: #7f8c8d;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: var(--primary);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .simulation-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        canvas {
+            border: 1px solid var(--secondary);
+            margin: 10px 0;
+        }
+        .formula {
+            background: #f0f3f4;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Circuit Analysis Report</h1>
 
-## Problem 1  
-### Equivalent Resistance Using Graph Theory
+    <!-- Theory Section -->
+    <h2>1. Theoretical Background</h2>
+    <div class="formula">
+        <strong>Series Resistance:</strong> R<sub>eq</sub> = R₁ + R₂ + ... + Rₙ
+    </div>
+    <div class="formula">
+        <strong>Parallel Resistance:</strong> 1/R<sub>eq</sub> = 1/R₁ + 1/R₂ + ... + 1/Rₙ
+    </div>
 
----
+    <!-- Algorithm Section -->
+    <h2>2. Reduction Algorithm</h2>
+    <pre>
+function reduceGraph(graph):
+    while changes:
+        if series nodes exist:
+            merge resistors in series
+        elif parallel edges exist:
+            merge resistors in parallel
+    return final resistance
+    </pre>
 
-## Motivation
+    <!-- Simulation Section -->
+    <div class="simulation-box">
+        <h3>Interactive Circuit Simulator</h3>
+        <canvas id="circuitCanvas" width="600" height="200"></canvas>
+        
+        <div class="controls">
+            <button onclick="addComponent('series')">Add Series Resistor</button>
+            <button onclick="addComponent('parallel')">Add Parallel Resistor</button>
+            <button onclick="reset()" style="background: var(--secondary)">Reset</button>
+        </div>
+        
+        <div>
+            <strong>Resistance Value:</strong>
+            <input type="number" id="resValue" value="10" min="1" style="width: 80px;">
+            Ω
+        </div>
+        
+        <h4 style="margin-top:15px;">Equivalent Resistance: 
+            <span id="result" style="color: var(--primary);">0</span> Ω
+        </h4>
+    </div>
 
-Calculating equivalent resistance is a fundamental problem in electrical circuits, essential for understanding and designing efficient systems. While traditional methods involve iteratively applying series and parallel resistor rules, these approaches can become cumbersome for complex circuits with many components. Graph theory offers a powerful alternative, providing a structured and algorithmic way to analyze circuits.
+    <!-- Analysis Section -->
+    <h2>3. Complexity Analysis</h2>
+    <table style="width:100%; border-collapse: collapse;">
+        <tr style="background: var(--primary); color: white;">
+            <th style="padding: 8px;">Operation</th>
+            <th>Time Complexity</th>
+        </tr>
+        <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">Series Reduction</td>
+            <td>O(n)</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">Parallel Reduction</td>
+            <td>O(n log n)</td>
+        </tr>
+    </table>
 
-By representing a circuit as a graph—where nodes correspond to junctions and edges represent resistors with weights equal to their resistance values—we can systematically simplify even the most intricate networks. This method not only streamlines calculations but also opens the door to automated analysis, making it particularly useful in modern applications like circuit simulation software, optimization problems, and network design.
+<script>
+// Circuit Simulation Logic
+let components = [];
+const canvas = document.getElementById('circuitCanvas');
+const ctx = canvas.getContext('2d');
 
-Studying equivalent resistance through graph theory is valuable not only for its practical applications but also for the deeper insights it provides into the interplay between electrical and mathematical concepts. This approach highlights the versatility of graph theory, demonstrating its relevance across physics, engineering, and computer science.
+function drawComponent(x, y, type) {
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    
+    // Draw resistor symbol
+    for(let i = 0; i < 4; i++) {
+        ctx.lineTo(x + 20 + i*30, y + (i%2 ? -15 : 15));
+    }
+    
+    ctx.strokeStyle = type === 'series' ? '#e74c3c' : '#3498db';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+}
 
----
+function drawCircuit() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw base line
+    ctx.beginPath();
+    ctx.moveTo(50, 100);
+    ctx.lineTo(canvas.width-50, 100);
+    ctx.strokeStyle = '#333';
+    ctx.stroke();
 
-## Fundamental Concepts and Formulas
+    // Draw components
+    let x = 100;
+    components.forEach(comp => {
+        drawComponent(x, 100, comp.type);
+        x += 80;
+    });
+}
 
-### Series Resistors
+function calculateResistance() {
+    let seriesSum = 0;
+    let parallelSum = 0;
+    
+    components.forEach(comp => {
+        const value = parseFloat(comp.value);
+        comp.type === 'series' ? seriesSum += value : parallelSum += 1/value;
+    });
+    
+    const total = seriesSum + (parallelSum > 0 ? 1/parallelSum : 0);
+    document.getElementById('result').textContent = total.toFixed(2);
+}
 
-Resistors are in **series** when they are connected end-to-end, and the same current flows through each resistor. The equivalent resistance, \( R_{eq} \), is the sum of their resistances:
+function addComponent(type) {
+    const value = document.getElementById('resValue').value;
+    components.push({type: type, value: value});
+    calculateResistance();
+    drawCircuit();
+}
 
-$$
-R_{eq} = R_1 + R_2 + \cdots + R_n
-$$
+function reset() {
+    components = [];
+    calculateResistance();
+    drawCircuit();
+}
 
-### Parallel Resistors
-
-Resistors are in **parallel** when their terminals are connected to the same two nodes, sharing the same voltage across each resistor. The equivalent resistance is found by:
-
-$$
-\frac{1}{R_{eq}} = \frac{1}{R_1} + \frac{1}{R_2} + \cdots + \frac{1}{R_n}
-$$
-
-Or equivalently:
-
-$$
-R_{eq} = \left( \sum_{i=1}^n \frac{1}{R_i} \right)^{-1}
-$$
-
----
-
-## Graph Theory Approach
-
-### Circuit as a Graph
-
-- **Nodes** represent circuit junctions.
-- **Edges** represent resistors, weighted by their resistance.
-
-### Simplification Strategy
-
-- **Series Reduction:** If a node connects exactly two edges (resistors in series), combine their resistances by summing and replace with a single edge.
-- **Parallel Reduction:** If multiple edges connect the same two nodes (parallel resistors), combine using reciprocal sum formula.
-
-Iterate these steps until only two nodes remain connected by one equivalent resistor.
-
----
-
-## Algorithm Description (Pseudocode)
-
-```python
-def calculate_equivalent_resistance(graph):
-    while number_of_nodes(graph) > 2:
-        for node in graph.nodes:
-            edges = graph.edges_of(node)
-            if len(edges) == 2:
-                # Series reduction
-                r1, r2 = edges[0].weight, edges[1].weight
-                new_r = r1 + r2
-                merge_edges_in_series(graph, node, new_r)
-                break
-            elif multiple_edges_between_two_nodes(graph):
-                # Parallel reduction
-                r_values = get_parallel_resistances(graph)
-                new_r = 1 / sum(1/r for r in r_values)
-                merge_edges_in_parallel(graph, new_r)
-                break
-    return graph.final_edge.weight
+// Initial draw
+drawCircuit();
+</script>
+</body>
+</html>
