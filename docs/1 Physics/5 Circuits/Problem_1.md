@@ -1,185 +1,147 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Physics Lab Report</title>
-    <style>
-        :root {
-            --primary: #2980b9;
-            --secondary: #7f8c8d;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 0 20px;
-            line-height: 1.6;
-        }
-        h1, h2, h3 {
-            color: var(--primary);
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-        .simulation-box {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
-            margin: 20px 0;
-        }
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        canvas {
-            border: 1px solid var(--secondary);
-            margin: 10px 0;
-        }
-        .formula {
-            background: #f0f3f4;
-            padding: 10px;
-            border-radius: 3px;
-            margin: 10px 0;
-        }
-    </style>
-</head>
-<body>
-    <h1>Circuit Analysis Report</h1>
+# Circuits
 
-    <!-- Theory Section -->
-    <h2>1. Theoretical Background</h2>
-    <div class="formula">
-        <strong>Series Resistance:</strong> R<sub>eq</sub> = R₁ + R₂ + ... + Rₙ
-    </div>
-    <div class="formula">
-        <strong>Parallel Resistance:</strong> 1/R<sub>eq</sub> = 1/R₁ + 1/R₂ + ... + 1/Rₙ
-    </div>
+## Problem 1  
+### Equivalent Resistance Using Graph Theory
 
-    <!-- Algorithm Section -->
-    <h2>2. Reduction Algorithm</h2>
-    <pre>
-function reduceGraph(graph):
-    while changes:
-        if series nodes exist:
-            merge resistors in series
-        elif parallel edges exist:
-            merge resistors in parallel
-    return final resistance
-    </pre>
+---
 
-    <!-- Simulation Section -->
-    <div class="simulation-box">
-        <h3>Interactive Circuit Simulator</h3>
-        <canvas id="circuitCanvas" width="600" height="200"></canvas>
-        
-        <div class="controls">
-            <button onclick="addComponent('series')">Add Series Resistor</button>
-            <button onclick="addComponent('parallel')">Add Parallel Resistor</button>
-            <button onclick="reset()" style="background: var(--secondary)">Reset</button>
-        </div>
-        
-        <div>
-            <strong>Resistance Value:</strong>
-            <input type="number" id="resValue" value="10" min="1" style="width: 80px;">
-            Ω
-        </div>
-        
-        <h4 style="margin-top:15px;">Equivalent Resistance: 
-            <span id="result" style="color: var(--primary);">0</span> Ω
-        </h4>
-    </div>
+## Motivation
 
-    <!-- Analysis Section -->
-    <h2>3. Complexity Analysis</h2>
-    <table style="width:100%; border-collapse: collapse;">
-        <tr style="background: var(--primary); color: white;">
-            <th style="padding: 8px;">Operation</th>
-            <th>Time Complexity</th>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-            <td style="padding: 8px;">Series Reduction</td>
-            <td>O(n)</td>
-        </tr>
-        <tr style="border-bottom: 1px solid #ddd;">
-            <td style="padding: 8px;">Parallel Reduction</td>
-            <td>O(n log n)</td>
-        </tr>
-    </table>
+Calculating equivalent resistance is a fundamental problem in electrical circuits, essential for understanding and designing efficient systems. While traditional methods involve iteratively applying series and parallel resistor rules, these approaches become cumbersome for complex circuits. Graph theory offers a structured and algorithmic way to analyze circuits by representing them as graphs, where nodes correspond to junctions and edges represent resistors.
+
+This approach simplifies calculations and supports automation, making it highly valuable in circuit simulation and design.
+
+---
+
+## Fundamental Concepts and Formulas
+
+### Series Resistors
+
+Resistors connected end-to-end, carrying the same current. Equivalent resistance:
+
+$$
+R_{eq} = R_1 + R_2 + \cdots + R_n
+$$
+
+### Parallel Resistors
+
+Resistors connected across the same two nodes, sharing voltage. Equivalent resistance:
+
+$$
+\frac{1}{R_{eq}} = \frac{1}{R_1} + \frac{1}{R_2} + \cdots + \frac{1}{R_n}
+$$
+
+or equivalently:
+
+$$
+R_{eq} = \left( \sum_{i=1}^n \frac{1}{R_i} \right)^{-1}
+$$
+
+---
+
+## Graph Theory Approach
+
+Representing circuits as graphs with nodes and weighted edges (resistors) allows systematic reduction:
+
+- **Series reduction:** Combine resistors in series by summing resistances.
+- **Parallel reduction:** Combine parallel resistors via reciprocal sum.
+
+Iterate until a single equivalent resistance remains between the input and output nodes.
+
+---
+
+## JavaScript Simulation
+
+Below is a simple interactive simulation to add resistors in series or parallel and compute the equivalent resistance.
+
+```html
+<style>
+  body { font-family: Arial, sans-serif; max-width: 700px; margin: auto; padding: 20px;}
+  input[type="number"] { width: 100px; margin-right: 10px;}
+  button { margin: 5px; padding: 8px 12px; }
+  .result { margin-top: 20px; font-weight: bold; font-size: 1.2em; }
+  #resistor-list { margin-top: 10px; }
+</style>
+
+<h3>Add Resistors</h3>
+<label>Resistance (Ω): <input type="number" id="resistanceInput" min="0.01" step="0.01" value="10"></label><br>
+<button onclick="addSeries()">Add in Series</button>
+<button onclick="addParallel()">Add in Parallel</button>
+<button onclick="resetCircuit()">Reset</button>
+
+<div id="resistor-list"></div>
+<div class="result" id="result">Equivalent Resistance: 0 Ω</div>
 
 <script>
-// Circuit Simulation Logic
-let components = [];
-const canvas = document.getElementById('circuitCanvas');
-const ctx = canvas.getContext('2d');
+  let resistors = [];
 
-function drawComponent(x, y, type) {
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    
-    // Draw resistor symbol
-    for(let i = 0; i < 4; i++) {
-        ctx.lineTo(x + 20 + i*30, y + (i%2 ? -15 : 15));
+  function updateResult() {
+    if (resistors.length === 0) {
+      document.getElementById('result').innerText = 'Equivalent Resistance: 0 Ω';
+      document.getElementById('resistor-list').innerText = '';
+      return;
     }
-    
-    ctx.strokeStyle = type === 'series' ? '#e74c3c' : '#3498db';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-}
+    // Calculate equivalent resistance
+    // Assume resistors array holds objects: { type: 'series'|'parallel', value: Number }
 
-function drawCircuit() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw base line
-    ctx.beginPath();
-    ctx.moveTo(50, 100);
-    ctx.lineTo(canvas.width-50, 100);
-    ctx.strokeStyle = '#333';
-    ctx.stroke();
+    // We process the resistors array step-by-step
+    // Starting with the first resistor value:
+    let Req = resistors[0].value;
 
-    // Draw components
-    let x = 100;
-    components.forEach(comp => {
-        drawComponent(x, 100, comp.type);
-        x += 80;
-    });
-}
+    for (let i = 1; i < resistors.length; i++) {
+      const r = resistors[i].value;
+      const t = resistors[i].type;
+      if (t === 'series') {
+        Req += r; // Series: sum resistances
+      } else if (t === 'parallel') {
+        Req = 1 / (1/Req + 1/r); // Parallel: reciprocal sum
+      }
+    }
 
-function calculateResistance() {
-    let seriesSum = 0;
-    let parallelSum = 0;
-    
-    components.forEach(comp => {
-        const value = parseFloat(comp.value);
-        comp.type === 'series' ? seriesSum += value : parallelSum += 1/value;
-    });
-    
-    const total = seriesSum + (parallelSum > 0 ? 1/parallelSum : 0);
-    document.getElementById('result').textContent = total.toFixed(2);
-}
+    document.getElementById('result').innerText = 'Equivalent Resistance: ' + Req.toFixed(3) + ' Ω';
 
-function addComponent(type) {
-    const value = document.getElementById('resValue').value;
-    components.push({type: type, value: value});
-    calculateResistance();
-    drawCircuit();
-}
+    // Show the list of resistors added
+    const listText = resistors.map((r, idx) => 
+      `${idx === 0 ? 'Initial resistor' : (r.type === 'series' ? 'Series' : 'Parallel')}: ${r.value} Ω`
+    ).join('\n');
+    document.getElementById('resistor-list').innerText = listText;
+  }
 
-function reset() {
-    components = [];
-    calculateResistance();
-    drawCircuit();
-}
+  function addSeries() {
+    const input = document.getElementById('resistanceInput');
+    const val = parseFloat(input.value);
+    if (isNaN(val) || val <= 0) {
+      alert('Please enter a positive resistance value.');
+      return;
+    }
+    if (resistors.length === 0) {
+      resistors.push({ type: 'series', value: val }); // First resistor
+    } else {
+      resistors.push({ type: 'series', value: val });
+    }
+    updateResult();
+  }
 
-// Initial draw
-drawCircuit();
+  function addParallel() {
+    const input = document.getElementById('resistanceInput');
+    const val = parseFloat(input.value);
+    if (isNaN(val) || val <= 0) {
+      alert('Please enter a positive resistance value.');
+      return;
+    }
+    if (resistors.length === 0) {
+      resistors.push({ type: 'parallel', value: val }); // First resistor
+    } else {
+      resistors.push({ type: 'parallel', value: val });
+    }
+    updateResult();
+  }
+
+  function resetCircuit() {
+    resistors = [];
+    updateResult();
+  }
+
+  // Initialize
+  updateResult();
 </script>
-</body>
-</html>
