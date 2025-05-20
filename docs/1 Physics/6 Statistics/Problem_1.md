@@ -49,9 +49,8 @@ regardless of the population distribution shape.
 
 ---
 
-### JavaScript Simulation Code
+### Interactive Simulation 
 
-```html
 <div>
   <label>Sample Size: <input type="number" id="sampleSize" min="1" value="30"></label>
   <label>Repetitions: <input type="number" id="repetitions" min="100" value="1000"></label>
