@@ -115,6 +115,83 @@ We aim to produce labeled and annotated plots showing:
 Visualizations provide intuition about the dynamics under different configurations and help relate abstract concepts to practical applications.
 
 ---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lorentz Force Simulator</title>
+  <style>
+    canvas { border: 1px solid #000; background: #f8f8f8; }
+    input { width: 60px; margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Lorentz Force Simulator (2D)</h2>
+
+  <div>
+    <label>Electric Field Ex (V/m): <input type="number" id="Ex" value="0" /></label>
+    <label>Magnetic Field Bz (T): <input type="number" id="Bz" value="1" /></label>
+    <label>Initial Velocity vx (m/s): <input type="number" id="vx" value="10" /></label>
+    <label>vy (m/s): <input type="number" id="vy" value="0" /></label>
+    <label>Charge q (C): <input type="number" id="q" value="1" /></label>
+    <label>Mass m (kg): <input type="number" id="m" value="1" /></label>
+    <button onclick="startSimulation()">Start</button>
+  </div>
+
+  <canvas id="canvas" width="600" height="600"></canvas>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    function startSimulation() {
+      // Read parameters
+      const Ex = parseFloat(document.getElementById('Ex').value);
+      const Bz = parseFloat(document.getElementById('Bz').value);
+      const vx0 = parseFloat(document.getElementById('vx').value);
+      const vy0 = parseFloat(document.getElementById('vy').value);
+      const q = parseFloat(document.getElementById('q').value);
+      const m = parseFloat(document.getElementById('m').value);
+
+      // Initial state
+      let x = width / 2, y = height / 2;
+      let vx = vx0, vy = vy0;
+      const dt = 0.1;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, width, height);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+
+      let steps = 2000;
+      function step() {
+        for (let i = 0; i < 10; i++) {
+          const Fx = q * (Ex + vy * Bz);
+          const Fy = q * (-vx * Bz);
+
+          const ax = Fx / m;
+          const ay = Fy / m;
+
+          vx += ax * dt;
+          vy += ay * dt;
+          x += vx * dt;
+          y += vy * dt;
+
+          ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        steps -= 10;
+        if (steps > 0) requestAnimationFrame(step);
+      }
+
+      step();
+    }
+  </script>
+</body>
+</html>
 
 
 
