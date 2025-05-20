@@ -6,13 +6,13 @@
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="../../../img/favicon.ico" rel="shortcut icon"/>
-<title>Electromagnetism: Lorentz Force Simulation - Physics and Mathematics</title>
+<title>Simulating the Effects of the Lorentz Force - Physics and Mathematics</title>
 <link href="../../../css/theme.css" rel="stylesheet"/>
 <link href="../../../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
 <script>
         // Current page data
-        var mkdocs_page_name = "Electromagnetism: Lorentz Force Simulation";
+        var mkdocs_page_name = "Simulating the Effects of the Lorentz Force";
         var mkdocs_page_input_path = "1 Physics/4 Electromagnetism/Problem_1.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,25 +70,19 @@
 </li>
 <li class="toctree-l1 current"><a class="reference internal current">4 Electromagnetism</a>
 <ul class="current">
-<li class="toctree-l2 current"><a class="reference internal current" href="#">Electromagnetism: Lorentz Force Simulation</a>
+<li class="toctree-l2 current"><a class="reference internal current" href="#">Simulating the Effects of the Lorentz Force</a>
 <ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="#problem-1-simulating-the-effects-of-the-lorentz-force">Problem 1: Simulating the Effects of the Lorentz Force</a>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#motivation">Motivation</a>
+<li class="toctree-l3"><a class="reference internal" href="#1-introduction-and-applications">1. Introduction and Applications</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#1-exploration-of-applications">1. Exploration of Applications</a>
+<li class="toctree-l3"><a class="reference internal" href="#2-simulation-of-particle-motion">2. Simulation of Particle Motion</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#2-simulating-particle-motion">2. Simulating Particle Motion</a>
+<li class="toctree-l3"><a class="reference internal" href="#3-numerical-method">3. Numerical Method</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#3-parameter-exploration">3. Parameter Exploration</a>
+<li class="toctree-l3"><a class="reference internal" href="#4-interactive-simulation">4. Interactive Simulation</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#4-visualization">4. Visualization</a>
+<li class="toctree-l3"><a class="reference internal" href="#5-discussion">5. Discussion</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#suggestions-for-extensions">Suggestions for Extensions</a>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="#references">References</a>
-</li>
-</ul>
+<li class="toctree-l3"><a class="reference internal" href="#6-extensions">6. Extensions</a>
 </li>
 </ul>
 </li>
@@ -181,7 +175,7 @@
 <li><a aria-label="Docs" class="icon icon-home" href="../../.."></a></li>
 <li class="breadcrumb-item">1 Physics</li>
 <li class="breadcrumb-item">4 Electromagnetism</li>
-<li class="breadcrumb-item active">Electromagnetism: Lorentz Force Simulation</li>
+<li class="breadcrumb-item active">Simulating the Effects of the Lorentz Force</li>
 <li class="wy-breadcrumbs-aside">
 </li>
 </ul>
@@ -189,239 +183,116 @@
 </div>
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
-<h1 id="electromagnetism-lorentz-force-simulation">Electromagnetism: Lorentz Force Simulation</h1>
-<h2 id="problem-1-simulating-the-effects-of-the-lorentz-force">Problem 1: Simulating the Effects of the Lorentz Force</h2>
-<h3 id="motivation">Motivation</h3>
-<p>The <strong>Lorentz force</strong> describes the combined effect of electric and magnetic fields on a moving charged particle. It is a cornerstone of electromagnetism and plays a crucial role in:</p>
+<h1 id="simulating-the-effects-of-the-lorentz-force">Simulating the Effects of the Lorentz Force</h1>
+<h2 id="1-introduction-and-applications">1. Introduction and Applications</h2>
+<p>The Lorentz force, expressed as <strong>F = q(E + v × B)</strong>, governs the motion of charged particles in electric and magnetic fields. It is fundamental in fields such as plasma physics, particle accelerators, and astrophysics.</p>
+<p>Key systems involving Lorentz force:
+- Particle accelerators (e.g., cyclotrons)
+- Mass spectrometers
+- Magnetic confinement in plasma physics</p>
+<p>Electric fields (E) accelerate charged particles, while magnetic fields (B) change their direction of motion, leading to complex trajectories.</p>
+<h2 id="2-simulation-of-particle-motion">2. Simulation of Particle Motion</h2>
+<p>We implement a numerical simulation of a charged particle's trajectory under various field conditions:</p>
 <ul>
-<li><strong>Plasma physics</strong></li>
-<li><strong>Particle accelerators</strong></li>
-<li><strong>Mass spectrometry</strong></li>
-<li><strong>Astrophysical plasmas</strong></li>
-<li><strong>Fusion devices (e.g., Tokamaks)</strong></li>
+<li>Uniform magnetic field</li>
+<li>Combined uniform electric and magnetic fields</li>
+<li>Crossed electric and magnetic fields</li>
 </ul>
-<p>The Lorentz force is defined by the following vector equation:</p>
+<p>Parameters such as charge (q), mass (m), initial velocity (v), and field strengths (E, B) can be adjusted.</p>
+<h2 id="3-numerical-method">3. Numerical Method</h2>
+<p>We use the Euler method for integrating the equations of motion:</p>
 <div class="arithmatex">\[
-\vec{F} = q(\vec{E} + \vec{v} \times \vec{B})
+\mathbf{F} = q(\mathbf{E} + \mathbf{v} \times \mathbf{B}) = m \frac{d\mathbf{v}}{dt}
 \]</div>
-<p>Where:
-- <span class="arithmatex">\( \vec{F} \)</span> is the force experienced by the particle (in newtons)
-- <span class="arithmatex">\( q \)</span> is the charge of the particle (in coulombs)
-- <span class="arithmatex">\( \vec{E} \)</span> is the electric field (in volts per meter)
-- <span class="arithmatex">\( \vec{v} \)</span> is the velocity of the particle (in meters per second)
-- <span class="arithmatex">\( \vec{B} \)</span> is the magnetic field (in teslas)</p>
-<p>Understanding the behavior of charged particles in various field configurations allows us to model and design devices used in modern physics and engineering.</p>
-<hr/>
-<h3 id="1-exploration-of-applications">1. Exploration of Applications</h3>
-<h4 id="real-world-systems-where-lorentz-force-is-crucial">Real-World Systems Where Lorentz Force is Crucial:</h4>
-<ul>
-<li><strong>Particle Accelerators:</strong> Steering and focusing charged particles using magnetic and electric fields.</li>
-<li><strong>Mass Spectrometers:</strong> Separation of ions based on mass-to-charge ratio using magnetic deflection.</li>
-<li><strong>Plasma Confinement Devices:</strong> Magnetic fields are used to confine hot plasma in fusion reactors like Tokamaks.</li>
-<li><strong>Cathode Ray Tubes (CRTs):</strong> Electron beams are deflected using magnetic and electric fields.</li>
-</ul>
-<h4 id="role-of-fields">Role of Fields:</h4>
-<ul>
-<li><strong>Electric Fields (<span class="arithmatex">\( \vec{E} \)</span>)</strong>: Accelerate particles in the direction of the field.</li>
-<li><strong>Magnetic Fields (<span class="arithmatex">\( \vec{B} \)</span>)</strong>: Cause circular or helical motion due to perpendicular force to velocity.</li>
-</ul>
-<hr/>
-<h3 id="2-simulating-particle-motion">2. Simulating Particle Motion</h3>
-<p>We simulate the motion of a charged particle under various field configurations using Newton’s Second Law:</p>
-<div class="arithmatex">\[
-m\frac{d\vec{v}}{dt} = q(\vec{E} + \vec{v} \times \vec{B})
-\]</div>
-<p>Where:
-- <span class="arithmatex">\( m \)</span> is the mass of the particle
-- <span class="arithmatex">\( \frac{d\vec{v}}{dt} \)</span> is the particle’s acceleration</p>
-<h4 id="scenarios">Scenarios:</h4>
-<ul>
-<li><strong>Uniform Magnetic Field Only:</strong></li>
-<li>Particle undergoes circular or helical motion depending on velocity components.</li>
-<li>
-<p>Radius of motion (Larmor radius) is:</p>
-<div class="arithmatex">\[
-r = \frac{mv_\perp}{|q|B}
-\]</div>
-</li>
-<li>
-<p><strong>Combined Uniform Electric and Magnetic Fields:</strong></p>
-</li>
-<li>Results in <strong>drift motion</strong> or <strong>helical trajectories</strong>.</li>
-<li>
-<p>If <span class="arithmatex">\( \vec{E} \perp \vec{B} \)</span>, particle drifts at:</p>
-<div class="arithmatex">\[
-\vec{v}_d = \frac{\vec{E} \times \vec{B}}{B^2}
-\]</div>
-</li>
-<li>
-<p><strong>Crossed Fields (<span class="arithmatex">\( \vec{E} \perp \vec{B} \)</span>):</strong></p>
-</li>
-<li>The particle can exhibit complex motion with both circular and translational components.</li>
-</ul>
-<hr/>
-<h3 id="3-parameter-exploration">3. Parameter Exploration</h3>
-<p>The simulation will support variable parameters:</p>
-<ul>
-<li><strong>Field Strengths:</strong></li>
-<li>Electric field magnitude and direction <span class="arithmatex">\( \vec{E} \)</span></li>
-<li>
-<p>Magnetic field magnitude and direction <span class="arithmatex">\( \vec{B} \)</span></p>
-</li>
-<li>
-<p><strong>Particle Properties:</strong></p>
-</li>
-<li>Initial velocity <span class="arithmatex">\( \vec{v}_0 \)</span></li>
-<li>Charge <span class="arithmatex">\( q \)</span></li>
-<li>Mass <span class="arithmatex">\( m \)</span></li>
-</ul>
-<p>By changing these, we observe different behaviors:</p>
-<ul>
-<li>Increasing <span class="arithmatex">\( B \)</span> → smaller Larmor radius</li>
-<li>Increasing <span class="arithmatex">\( E \)</span> → increased drift velocity</li>
-<li>Heavier mass <span class="arithmatex">\( m \)</span> → slower response to field changes</li>
-</ul>
-<hr/>
-<h3 id="4-visualization">4. Visualization</h3>
-<p>We aim to produce labeled and annotated plots showing:</p>
-<ul>
-<li><strong>2D and 3D Trajectories</strong>:</li>
-<li>Top-down views for circular motion</li>
-<li>Side views for helical motion</li>
-<li><strong>Key Physical Quantities</strong>:</li>
-<li>Larmor Radius (<span class="arithmatex">\( r \)</span>)</li>
-<li>Drift Velocity (<span class="arithmatex">\( v_d \)</span>)</li>
-</ul>
-<p>Visualizations provide intuition about the dynamics under different configurations and help relate abstract concepts to practical applications.</p>
-<hr/>
-<!-- ===================== 2D SIMULATION (Orjinal Kod) ===================== -->
-<h2>2D Lorentz Force Simulation</h2>
+<p>At each time step:</p>
+<p>[
+\mathbf{a} = \frac{\mathbf{F}}{m}
+]
+[
+\mathbf{v}<em t_1="t+1">{t+1} = \mathbf{v}_t + \mathbf{a} \Delta t
+]
+[
+\mathbf{r}</em>} = \mathbf{r<em t_1="t+1">t + \mathbf{v}</em> \Delta t
+]</p>
+<h2 id="4-interactive-simulation">4. Interactive Simulation</h2>
+<p>Below is an interactive JavaScript simulation embedded directly in the page. You can modify parameters and visualize the particle's trajectory in 2D.</p>
 <div>
-<label>Initial Velocity X: <input id="vx2d" type="number" value="1"/></label>
-<label>Y: <input id="vy2d" type="number" value="1"/></label>
-<button onclick="simulate2D()">Simulate 2D</button>
+<label>Charge (q): <input id="q" step="0.1" type="number" value="1"/></label>
+<label>Mass (m): <input id="m" step="0.1" type="number" value="1"/></label>
+<label>Electric Field Ex: <input id="Ex" step="0.1" type="number" value="0"/></label>
+<label>Electric Field Ey: <input id="Ey" step="0.1" type="number" value="0"/></label>
+<label>Magnetic Field Bz: <input id="Bz" step="0.1" type="number" value="1"/></label><br/>
+<label>Initial Velocity Vx: <input id="Vx" step="0.1" type="number" value="1"/></label>
+<label>Initial Velocity Vy: <input id="Vy" step="0.1" type="number" value="0"/></label>
+<button onclick="runSimulation()">Run Simulation</button>
 </div>
-<canvas height="400" id="canvas2d" style="border:1px solid #000;" width="500"></canvas>
+<canvas height="400" id="lorentzCanvas" style="border:1px solid #000;" width="600"></canvas>
 <script>
-function simulate2D() {
-  const canvas = document.getElementById("canvas2d");
+function runSimulation() {
+  const q = parseFloat(document.getElementById("q").value);
+  const m = parseFloat(document.getElementById("m").value);
+  const Ex = parseFloat(document.getElementById("Ex").value);
+  const Ey = parseFloat(document.getElementById("Ey").value);
+  const Bz = parseFloat(document.getElementById("Bz").value);
+  let Vx = parseFloat(document.getElementById("Vx").value);
+  let Vy = parseFloat(document.getElementById("Vy").value);
+
+  const canvas = document.getElementById("lorentzCanvas");
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const q = 1, m = 1, Bz = 1;
-  let vx = parseFloat(document.getElementById("vx2d").value);
-  let vy = parseFloat(document.getElementById("vy2d").value);
+  // Initial position in middle
   let x = canvas.width / 2;
   let y = canvas.height / 2;
-  const dt = 0.1;
 
+  const dt = 0.1; 
   ctx.beginPath();
   ctx.moveTo(x, y);
 
-  for (let i = 0; i < 1000; i++) {
-    const Fx = q * vy * Bz;
-    const Fy = -q * vx * Bz;
-    vx += (Fx / m) * dt;
-    vy += (Fy / m) * dt;
-    x += vx;
-    y += vy;
+  for(let i=0; i<1000; i++) {
+    // Lorentz Force components
+    const Fx = q * (Ex + Vy * Bz);
+    const Fy = q * (Ey - Vx * Bz);
+
+    // Acceleration
+    const ax = Fx / m;
+    const ay = Fy / m;
+
+    // Update velocity
+    Vx += ax * dt;
+    Vy += ay * dt;
+
+    // Update position
+    x += Vx;
+    y += Vy;
+
     ctx.lineTo(x, y);
   }
 
   ctx.strokeStyle = "blue";
+  ctx.lineWidth = 2;
   ctx.stroke();
 }
 </script>
 <hr/>
-<!-- ===================== 3D SIMULATION (Plotly.js ile) ===================== -->
-<h2>3D Lorentz Force Simulation</h2>
-<div>
-<label>Initial Velocity X: <input id="vx3d" step="0.1" type="number" value="1"/></label>
-<label>Y: <input id="vy3d" step="0.1" type="number" value="1"/></label>
-<label>Z: <input id="vz3d" step="0.1" type="number" value="1"/></label>
-<button onclick="simulate3D()">Simulate 3D</button>
-</div>
-<div id="plot3d" style="width: 600px; height: 400px; border:1px solid #000;"></div>
-<!-- Plotly.js CDN -->
-<script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
-<script>
-function simulate3D() {
-  const q = 1, m = 1;
-  const B = [0, 0, 1];
-
-  let vx = parseFloat(document.getElementById("vx3d").value);
-  let vy = parseFloat(document.getElementById("vy3d").value);
-  let vz = parseFloat(document.getElementById("vz3d").value);
-
-  let x = 0, y = 0, z = 0;
-  const dt = 0.05;
-
-  const xs = [];
-  const ys = [];
-  const zs = [];
-
-  for (let i = 0; i < 1000; i++) {
-    // Lorentz force: F = q * v x B
-    const Fx = q * (vy * B[2] - vz * B[1]);
-    const Fy = q * (vz * B[0] - vx * B[2]);
-    const Fz = q * (vx * B[1] - vy * B[0]);
-
-    // Acceleration a = F/m
-    const ax = Fx / m;
-    const ay = Fy / m;
-    const az = Fz / m;
-
-    // Velocity update
-    vx += ax * dt;
-    vy += ay * dt;
-    vz += az * dt;
-
-    // Position update
-    x += vx * dt;
-    y += vy * dt;
-    z += vz * dt;
-
-    xs.push(x);
-    ys.push(y);
-    zs.push(z);
-  }
-
-  const trace = {
-    x: xs,
-    y: ys,
-    z: zs,
-    mode: 'lines',
-    type: 'scatter3d',
-    line: { color: 'red', width: 3 }
-  };
-
-  const layout = {
-    margin: { l: 0, r: 0, b: 0, t: 0 },
-    scene: {
-      xaxis: { title: 'X' },
-      yaxis: { title: 'Y' },
-      zaxis: { title: 'Z' },
-    }
-  };
-
-  Plotly.newPlot('plot3d', [trace], layout);
-}
-</script>
-<hr>
-<h3 id="suggestions-for-extensions">Suggestions for Extensions</h3>
+<h2 id="5-discussion">5. Discussion</h2>
+<p>The results demonstrate classical behaviors such as:</p>
 <ul>
-<li>Simulate <strong>non-uniform magnetic fields</strong> to model magnetic mirrors or advanced trap designs.</li>
-<li>Incorporate <strong>relativistic effects</strong> for particles approaching light speed.</li>
-<li>Add <strong>collision effects</strong> to simulate plasma interactions.</li>
+<li>Circular motion in uniform magnetic fields (Larmor orbits)</li>
+<li>Helical paths with combined E and B fields</li>
+<li>Drift motion with crossed fields</li>
 </ul>
+<p>These phenomena underpin technologies like cyclotrons and magnetic traps used in plasma confinement.</p>
 <hr/>
-<h3 id="references">References</h3>
+<h2 id="6-extensions">6. Extensions</h2>
+<p>Possible extensions include:</p>
 <ul>
-<li>Griffiths, D. J. <em>Introduction to Electrodynamics</em></li>
-<li>Jackson, J. D. <em>Classical Electrodynamics</em></li>
-<li>Numerical Recipes in Python: Runge-Kutta Methods</li>
+<li>3D trajectory visualization</li>
+<li>More accurate numerical methods (Runge-Kutta)</li>
+<li>Non-uniform or time-dependent fields</li>
+<li>Multiple particle simulations</li>
 </ul>
-</hr></div>
+</div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
 <a class="btn btn-neutral float-left" href="../../3%20Waves/Problem_1/" title="Problem 1: Interference Patterns on a Water Surface"><span class="icon icon-circle-arrow-left"></span> Previous</a>
