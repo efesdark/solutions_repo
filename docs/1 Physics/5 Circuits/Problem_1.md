@@ -57,7 +57,7 @@ Add resistors in series or parallel, edit their values, and see the circuit visu
 ---
 
 <style>
-  body { font-family: Arial, sans-serif; max-width: 700px; margin: auto; padding: 20px;}
+  -
   input[type="number"] { width: 80px; margin-right: 10px;}
   button { margin: 5px 8px 5px 0; padding: 6px 12px; cursor: pointer; }
   #resistor-list { margin-top: 15px; white-space: pre-wrap; font-family: monospace; }
